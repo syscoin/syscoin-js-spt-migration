@@ -8,12 +8,12 @@ const HDSigner = new sjs.utils.HDSigner(mnemonic, null, true)
 const syscoinjs = new sjs.SyscoinJSLib(HDSigner, backendURL)
 const whitelist = []
 
-function readAssets() {
-  console.log("Reading assets.json file...")
+function readAssets () {
+  console.log('Reading assets.json file...')
   const assets = require('assets.json')
-  var assetsToReturn = []
-  if(whitelist.length > 0) {
-    for (var i = 0; i < assets.length; i++) {
+  let assetsToReturn = []
+  if (whitelist.length > 0) {
+    for (let i = 0; i < assets.length; i++) {
       const assetAllocation = whitelist.find(voutAsset => voutAsset.asset_guid === assets[i].asset_guid)
       if (assetAllocation !== undefined) {
         assetsToReturn.push_back(assets[i])
@@ -24,16 +24,16 @@ function readAssets() {
   }
   return assetsToReturn
 }
-function readAssetAllocations() {
-  console.log("Reading assetallocations.json file...")
+function readAssetAllocations () {
+  console.log('Reading assetallocations.json file...')
   const assetallocations = require('assetallocations.json')
-  var assetallocationsMap = new Map()
-  var totalCount = 0
+  const assetallocationsMap = new Map()
+  let totalCount = 0
   // group allocations via guid as keys in a map
-  for (var i = 0; i < assetallocations.length; i++) {
-    var allocation = assetallocations[i]
-    if(assetallocationsMap.has(allocation.asset_guid)) {
-      var allocations = assetallocationsMap.get(allocation.asset_guid)
+  for (let i = 0; i < assetallocations.length; i++) {
+    const allocation = assetallocations[i]
+    if (assetallocationsMap.has(allocation.asset_guid)) {
+      const allocations = assetallocationsMap.get(allocation.asset_guid)
       allocations.push_back(allocation)
     } else {
       assetallocationsMap.set(allocation.asset_guid, [allocation])
@@ -41,20 +41,20 @@ function readAssetAllocations() {
   }
   for (const [key, value] of Object.entries(assetallocationsMap)) {
     const assetAllocation = whitelist.find(voutAsset => voutAsset.asset_guid === key)
-    if (whitelist.length > 0 && assetAllocation === undefined ) {
+    if (whitelist.length > 0 && assetAllocation === undefined) {
       assetallocationsMap.delete(key)
     } else {
       totalCount += value.length
     }
   }
-  return {map: assetallocationsMap, count: totalCount}
+  return { map: assetallocationsMap, count: totalCount }
 }
-async function confirmAssetAllocation(address, assetGuid, balance) {
-  const utxoObj = await syscoinjs.utils.utils.fetchBackendUTXOS(blockbookURL, address)
+async function confirmAssetAllocation (address, assetGuid, balance) {
+  const utxoObj = await syscoinjs.utils.utils.fetchBackendUTXOS(syscoinjs.blockbookURL, address)
   if (utxoObj.utxos) {
     utxoObj.utxos.forEach(utxo => {
       if (utxo.assetInfo) {
-        if(utxo.address === address && utxo.assetInfo.assetGuid ===  assetGuid && new BN(utxo.assetInfo.value).eq(balance)) {
+        if (utxo.address === address && utxo.assetInfo.assetGuid === assetGuid && new syscoinjs.utils.BN(utxo.assetInfo.value).eq(balance)) {
           return true
         }
       }
@@ -62,44 +62,44 @@ async function confirmAssetAllocation(address, assetGuid, balance) {
   }
   return false
 }
-function sleep(ms) {
+function sleep (ms) {
   return new Promise(resolve => setTimeout(resolve, ms))
 }
-async function confirmAsset(assetGuid) {
+async function confirmAsset (assetGuid) {
   const asset = await syscoinjs.utils.fetchBackendAsset(backendURL, assetGuid)
   return (asset && asset.assetGuid === assetGuid)
 }
-async function confirmTx(txid) {
-  for(var i =0;i<100;i++){
+async function confirmTx (txid) {
+  for (let i = 0; i < 100; i++) {
     await sleep(1000)
     const tx = await syscoinjs.utils.fetchBackendRawTx(backendURL, txid)
-    if(tx.confirmations && tx.confirmations > 0) {
+    if (tx.confirmations && tx.confirmations > 0) {
       return true
     }
   }
   console.log('Could not find a confirmed transaction for txid ' + txid)
   return false
 }
-async function createAssets() {
-  var assets = readAssets()
+async function createAssets () {
+  const assets = readAssets()
   console.log('Creating assets...')
-  var res
-  var count = 0
-  for (var i = 0; i < assets.length; i++) {
-    var asset = assets[i]
-    if(!confirmAsset(asset.asset_guid)) {
+  let res
+  let count = 0
+  for (let i = 0; i < assets.length; i++) {
+    const asset = assets[i]
+    if (!confirmAsset(asset.asset_guid)) {
       count++
       const txOpts = { rbf: false, assetGuid: asset.asset_guid }
       const assetOpts = { precision: asset.precision, symbol: asset.symbol, maxsupply: new syscoinjs.utils.BN(asset.max_supply).mul(sjstx.utils.COIN), description: asset.public_value }
       res = await newAsset(assetOpts, txOpts)
-      if(!res) {
+      if (!res) {
         console.log('Could not create assets, transaction not confirmed, exiting...')
         return
       }
-      if((count%10) === 0) {
-        console.log('Confirming tx: ' + res.txid + '. Total assets so far: ' + (i+1) + '. Remaining assets: ' + (assets.length - (i+1)))
+      if ((count % 10) === 0) {
+        console.log('Confirming tx: ' + res.txid + '. Total assets so far: ' + (count + 1) + '. Remaining assets: ' + (assets.length - (count + 1)))
         const confirmed = await confirmTx(res.txid)
-        if(!confirmed) {
+        if (!confirmed) {
           console.log('Could not create assets, transaction not confirmed, exiting...')
           return
         }
@@ -107,47 +107,47 @@ async function createAssets() {
       }
     }
   }
-  if((count%10) !== 0 && res) {
-    console.log('Confirming last tx: ' + res.txid + '. Total assets so far: ' + (i+1) + '. Remaining assets: ' + (assets.length - (i+1)))
+  if ((count % 10) !== 0 && res) {
+    console.log('Confirming last tx: ' + res.txid + '. Total assets so far: ' + (count + 1) + '. Remaining assets: ' + (assets.length - (count + 1)))
     const confirmed = await confirmTx(res.txid)
-    if(!confirmed) {
+    if (!confirmed) {
       console.log('Could not create assets, transaction not confirmed, exiting...')
       return
     }
   }
   console.log('Done, created ' + assets.length + ' assets!')
 }
-async function issueAssets() {
-  var assetallocations = readAssetAllocations()
+async function issueAssets () {
+  const assetallocations = readAssetAllocations()
   console.log('Issuing asset allocations...')
-  var currentOutputCount = 0
-  var totalOutputCount = 0
+  let currentOutputCount = 0
+  let totalOutputCount = 0
   for (const [key, values] of Object.entries(assetallocations.map)) {
     const assetGuid = key
-    var allocationOutputs = []
-    while(values.length > 0) {
-      var value = values.pop()
+    let allocationOutputs = []
+    while (values.length > 0) {
+      const value = values.pop()
       const balance = new syscoinjs.utils.BN(value.balance).mul(sjstx.utils.COIN)
-      if(!confirmAssetAllocation(address, assetGuid, balance)) {
-        allocationOutputs.push_back({value: balance, address: value.address})
+      if (!confirmAssetAllocation(value.address, assetGuid, balance)) {
+        allocationOutputs.push_back({ value: balance, address: value.address })
         // group outputs of an asset into up to 255 outputs per transaction
-        if(allocationOutputs.length >= 255) {
-          currentOutputCount+=allocationOutputs.length
-          totalOutputCount+=allocationOutputs.length
+        if (allocationOutputs.length >= 255) {
+          currentOutputCount += allocationOutputs.length
+          totalOutputCount += allocationOutputs.length
           const assetMap = new Map([
             [assetGuid, { outputs: allocationOutputs }]
           ])
-          var res = await issueAsset(assetMap)
-          if(!res) {
+          const res = await issueAsset(assetMap)
+          if (!res) {
             console.log('Could not issue asset tx, exiting...')
             return
           }
           // every 2000 outputs we wait for a new block
-          if(currentOutputCount >= 2000) {
+          if (currentOutputCount >= 2000) {
             currentOutputCount = 0
             console.log('Confirming tx: ' + res.txid + '. Total asset allocations so far: ' + totalOutputCount + '. Remaining allocations: ' + (assetallocations.count - totalOutputCount))
             const confirmed = await confirmTx(res.txid)
-            if(!confirmed) {
+            if (!confirmed) {
               console.log('Could not issue asset, transaction not confirmed, exiting...')
               return
             }
@@ -156,18 +156,18 @@ async function issueAssets() {
         }
       }
     }
-    if(allocationOutputs.length > 0) {
+    if (allocationOutputs.length > 0) {
       const assetMap = new Map([
         [assetGuid, { outputs: allocationOutputs }]
       ])
-      var res = await issueAsset(assetMap)
-      if(!res) {
+      const res = await issueAsset(assetMap)
+      if (!res) {
         console.log('Could not issue last asset tx, exiting...')
         return
       }
       console.log('Confirming last tx: ' + res.txid + '. Total asset allocations so far: ' + totalOutputCount + '. Remaining allocations: ' + (assetallocations.count - totalOutputCount))
       const confirmed = await confirmTx(res.txid)
-      if(!confirmed) {
+      if (!confirmed) {
         console.log('Could not issue asset, transaction not confirmed, exiting...')
         return
       }
@@ -175,32 +175,32 @@ async function issueAssets() {
   }
   console.log('Done, issued ' + assetallocations.count + ' asset allocations!')
 }
-async function transferAssets() {
-  var assets = readAssets()
+async function transferAssets () {
+  const assets = readAssets()
   console.log('Transfering assets...')
-  var res
-  var i
+  let res
+  let i
   for (i = 0; i < assets.length; i++) {
-    var asset = assets[i]
+    const asset = assets[i]
     res = await transferAsset(asset.asset_guid, asset.address)
-    if(!res) {
+    if (!res) {
       console.log('Could not transfer asset, exiting...')
       return
     }
-    if((i%2000) === 0) {
-      console.log('Confirming tx: ' + res.txid + '. Total assets so far: ' + (i+1) + '. Remaining assets: ' + (assets.length - (i+1)))
+    if ((i % 2000) === 0) {
+      console.log('Confirming tx: ' + res.txid + '. Total assets so far: ' + (i + 1) + '. Remaining assets: ' + (assets.length - (i + 1)))
       const confirmed = await confirmTx(res.txid)
-      if(!confirmed) {
+      if (!confirmed) {
         console.log('Could not transfer asset, transaction not confirmed, exiting...')
         return
       }
     }
     res = null
   }
-  if((i%2000) !== 0 && res) {
-    console.log('Confirming last tx: ' + res.txid + '. Total assets so far: ' + (i+1) + '. Remaining assets: ' + (assets.length - (i+1)))
+  if ((i % 2000) !== 0 && res) {
+    console.log('Confirming last tx: ' + res.txid + '. Total assets so far: ' + (i + 1) + '. Remaining assets: ' + (assets.length - (i + 1)))
     const confirmed = await confirmTx(res.txid)
-    if(!confirmed) {
+    if (!confirmed) {
       console.log('Could not transfer asset, transaction not confirmed, exiting...')
       return
     }
@@ -215,7 +215,7 @@ async function newAsset (assetOpts, txOpts) {
   // let HDSigner find asset destination address
   const sysReceivingAddress = null
   const psbt = await syscoinjs.assetNew(assetOpts, txOpts, sysChangeAddress, sysReceivingAddress, feeRate)
-  if(!psbt) {
+  if (!psbt) {
     console.log('Could not create transaction, not enough funds?')
     return null
   }
@@ -230,15 +230,15 @@ async function newAsset (assetOpts, txOpts) {
     console.log('Unrecognized response from backend')
     return null
   }
-  return {txid: resSend.result}
+  return { txid: resSend.result }
 }
 
 async function transferAsset (assetGuid, address) {
   const feeRate = new syscoinjs.utils.BN(10)
   const txOpts = { rbf: true }
-  const assetOpts =  { }
+  const assetOpts = { }
   const psbt = await syscoinjs.assetUpdate(assetGuid, assetOpts, txOpts, address, feeRate)
-  if(!psbt) {
+  if (!psbt) {
     console.log('Could not create transaction, not enough funds?')
     return null
   }
@@ -253,7 +253,7 @@ async function transferAsset (assetGuid, address) {
     console.log('Unrecognized response from backend')
     return null
   }
-  return {txid: resSend.result}
+  return { txid: resSend.result }
 }
 
 async function issueAsset (assetMap) {
@@ -262,7 +262,7 @@ async function issueAsset (assetMap) {
   // let HDSigner find change address
   const sysChangeAddress = null
   const psbt = await syscoinjs.assetSend(txOpts, assetMap, sysChangeAddress, feeRate)
-  if(!psbt) {
+  if (!psbt) {
     console.log('Could not create transaction, not enough funds?')
     return null
   }
@@ -277,6 +277,24 @@ async function issueAsset (assetMap) {
     console.log('Unrecognized response from backend')
     return null
   }
-  return {txid: resSend.result}
+  return { txid: resSend.result }
 }
 
+async function main () {
+  console.log(process.argv.length)
+  if (process.argv.length < 3) {
+    console.log('usage createassets/issueassets/transferassets')
+    return
+  }
+  if (process.argv[2] === 'createassets') {
+    await createAssets()
+  } else if (process.argv[2] === 'issueassets') {
+    await issueAssets()
+  } else if (process.argv[2] === 'transferassets') {
+    await transferAssets()
+  } else {
+    console.log('Unknown command: valid options are createassets/issueassets/transferassets')
+  }
+}
+
+main()
