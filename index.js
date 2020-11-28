@@ -106,7 +106,7 @@ async function createAssets () {
     if (!assetExists) {
       count++
       const txOpts = { rbf: false, assetGuid: asset.asset_guid }
-      const assetOpts = { precision: asset.precision, symbol: asset.symbol, maxsupply: new sjs.utils.BN(asset.max_supply).mul(sjstx.utils.COIN), description: asset.public_value.slice(0, 128) }
+      const assetOpts = { precision: asset.precision, symbol: asset.symbol, maxsupply: new sjs.utils.BN(asset.max_supply).mul(new sjs.utils.BN(sjstx.utils.COIN)), description: asset.public_value.slice(0, 128) }
       res = await newAsset(assetOpts, txOpts)
       if (!res) {
         console.log('Could not create assets, transaction not confirmed, exiting...')
@@ -145,7 +145,7 @@ async function issueAssets () {
     let allocationOutputs = []
     while (values.length > 0) {
       const value = values.pop()
-      const balance = new sjs.utils.BN(value.balance).mul(sjstx.utils.COIN)
+      const balance = new sjs.utils.BN(value.balance).mul(new sjs.utils.BN(sjstx.utils.COIN))
       const assetAllocationExists = await confirmAssetAllocation(value.address, assetGuid, balance)
       if (!assetAllocationExists) {
         allocationOutputs.push_back({ value: balance, address: value.address })
