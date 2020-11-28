@@ -108,7 +108,11 @@ async function createAssets () {
       const txOpts = { rbf: false, assetGuid: asset.asset_guid }
       const currentPubDataJson = JSON.parse(asset.public_value)
       const pubdata = (currentPubDataJson && currentPubDataJson.description) || asset.public_value
-      const maxsupply = asset.max_supply < 0? new sjs.utils.BN(Number.MAX_SAFE_INTEGER) :new sjs.utils.BN(asset.max_supply).mul(new sjs.utils.BN(sjstx.utils.COIN))
+      // int64 limits
+      // largest decimal amount that we can use, without compression overflow of uint (~1 quintillion satoshis)
+      // 10^18 - 1
+      // use limit if supply was negative meaning max supply
+      const maxsupply = asset.max_supply < 0? new sjs.utils.BN("999999999999999999") :new sjs.utils.BN(asset.max_supply).mul(new sjs.utils.BN(sjstx.utils.COIN))
       const assetOpts = { precision: asset.precision, symbol: asset.symbol, maxsupply: maxsupply, description: pubdata.slice(0, 128) }
       res = await newAsset(assetOpts, txOpts)
       if (!res) {
