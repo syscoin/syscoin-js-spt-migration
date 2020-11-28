@@ -7,7 +7,6 @@ const backendURL = 'http://localhost:9130'
 const HDSigner = new sjs.utils.HDSigner(mnemonic, null, true)
 const syscoinjs = new sjs.SyscoinJSLib(HDSigner, backendURL)
 const whitelist = []
-
 function readAssets () {
   console.log('Reading assets.json file...')
   const assets = require('./assets.json')
@@ -62,6 +61,11 @@ async function confirmAssetAllocation (address, assetGuid, balance) {
   }
   return false
 }
+async function confirmAccount () {
+  const utxoObj = await sjs.utils.fetchBackendAccount(syscoinjs.blockbookURL, HDSigner.getAccountXpub())
+  return(utxoObj.utxos && utxoObj.utxos.length > 0)
+}
+
 function sleep (ms) {
   return new Promise(resolve => setTimeout(resolve, ms))
 }
@@ -301,6 +305,11 @@ async function issueAsset (assetMap) {
 }
 
 async function main () {
+  const doesAccountExist = await confirmAccount();
+  if(!doesAccountExist) {
+    console.log('Invalid account specified to HDSigner, no UTXOs present...')
+    return
+  }
   console.log(process.argv.length)
   if (process.argv.length < 3) {
     console.log('usage createassets/issueassets/transferassets')
