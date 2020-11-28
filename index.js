@@ -2,7 +2,7 @@ const sjs = require('syscoinjs-lib')
 const sjstx = require('syscointx-js')
 const mnemonic = 'club toss element melody skin ship rifle student reason real interest insane elevator beauty movie'
 // blockbook URL
-const backendURL = 'http://localhost:9130'
+const backendURL = 'http://localhost:19035'
 // 'null' for no password encryption for local storage and 'true' for testnet
 const HDSigner = new sjs.utils.HDSigner(mnemonic, null, true)
 const syscoinjs = new sjs.SyscoinJSLib(HDSigner, backendURL)
@@ -62,7 +62,7 @@ async function confirmAssetAllocation (address, assetGuid, balance) {
   return false
 }
 async function confirmAccount () {
-  const utxoObj = await sjs.utils.fetchBackendAccount(syscoinjs.blockbookURL, HDSigner.getAccountXpub())
+  const utxoObj = await sjs.utils.fetchBackendAccount(syscoinjs.blockbookURL, HDSigner.getAccountXpub(), null, true)
   return(utxoObj.utxos && utxoObj.utxos.length > 0)
 }
 
