@@ -146,7 +146,7 @@ async function issueAssets () {
     let allocationOutputs = []
     while (values.length > 0) {
       const value = values.pop()
-      const balance = new sjs.utils.BN(value.balance).mul(new sjs.utils.BN(sjstx.utils.COIN))
+      const balance = value.balance < 0? Number.MAX_SAFE_INTEGER :new sjs.utils.BN(value.balance).mul(new sjs.utils.BN(sjstx.utils.COIN))
       const assetAllocationExists = await confirmAssetAllocation(value.address, assetGuid, balance)
       if (!assetAllocationExists) {
         allocationOutputs.push_back({ value: balance, address: value.address })
