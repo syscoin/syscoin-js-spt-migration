@@ -63,7 +63,7 @@ async function confirmAssetAllocation (address, assetGuid, balance) {
 }
 async function confirmAccount () {
   const utxoObj = await sjs.utils.fetchBackendAccount(syscoinjs.blockbookURL, HDSigner.getAccountXpub(), null, true)
-  return(utxoObj.utxos && utxoObj.utxos.length > 0)
+  return(utxoObj.balance && utxoObj.balance !== "0")
 }
 
 function sleep (ms) {
