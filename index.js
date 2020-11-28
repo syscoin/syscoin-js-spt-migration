@@ -102,7 +102,8 @@ async function createAssets () {
   let count = 0
   for (let i = 0; i < assets.length; i++) {
     const asset = assets[i]
-    if (!confirmAsset(asset.asset_guid)) {
+    const assetExists = await confirmAsset(asset.asset_guid)
+    if (!assetExists) {
       count++
       const txOpts = { rbf: false, assetGuid: asset.asset_guid }
       const assetOpts = { precision: asset.precision, symbol: asset.symbol, maxsupply: new sjs.utils.BN(asset.max_supply).mul(sjstx.utils.COIN), description: asset.public_value.slice(0, 128) }
@@ -145,7 +146,8 @@ async function issueAssets () {
     while (values.length > 0) {
       const value = values.pop()
       const balance = new sjs.utils.BN(value.balance).mul(sjstx.utils.COIN)
-      if (!confirmAssetAllocation(value.address, assetGuid, balance)) {
+      const assetAllocationExists = await confirmAssetAllocation(value.address, assetGuid, balance)
+      if (!assetAllocationExists) {
         allocationOutputs.push_back({ value: balance, address: value.address })
         // group outputs of an asset into up to 255 outputs per transaction
         if (allocationOutputs.length >= 255) {
@@ -201,7 +203,8 @@ async function transferAssets () {
   let count = 0
   for (let i = 0; i < assets.length; i++) {
     const asset = assets[i]
-    if (!confirmAssetTransferred(asset.asset_guid, asset.address)) {
+    const assetTransferred = await confirmAssetTransferred(asset.asset_guid, asset.address)
+    if (!assetTransferred) {
       count++
       res = await transferAsset(asset.asset_guid, asset.address)
       if (!res) {
