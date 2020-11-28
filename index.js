@@ -313,7 +313,6 @@ async function main () {
     console.log('Invalid account specified to HDSigner, no UTXOs present...')
     return
   }
-  console.log(process.argv.length)
   if (process.argv.length < 3) {
     console.log('usage createassets/issueassets/transferassets')
     return
