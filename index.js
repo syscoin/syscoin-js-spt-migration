@@ -107,13 +107,14 @@ async function createAssets () {
       count++
       const txOpts = { rbf: false, assetGuid: asset.asset_guid }
       const pubdata = asset.public_value.description || asset.public_value
-      const assetOpts = { precision: asset.precision, symbol: asset.symbol, maxsupply: new sjs.utils.BN(asset.max_supply).mul(new sjs.utils.BN(sjstx.utils.COIN)), description: pubdata.slice(0, 128) }
+      const maxsupply = asset.max_supply < 0? Number.MAX_SAFE_INTEGER :new sjs.utils.BN(asset.max_supply).mul(new sjs.utils.BN(sjstx.utils.COIN))
+      const assetOpts = { precision: asset.precision, symbol: asset.symbol, maxsupply: maxsupply, description: pubdata.slice(0, 128) }
       res = await newAsset(assetOpts, txOpts)
       if (!res) {
         console.log('Could not create assets, transaction not confirmed, exiting...')
         return
       }
-      if ((count % 2000) === 0) {
+      if ((count % 255) === 0) {
         console.log('Confirming tx: ' + res.txid + '. Total assets so far: ' + count + '. Remaining assets: ' + (assets.length - count))
         const confirmed = await confirmTx(res.txid)
         if (!confirmed) {
@@ -124,7 +125,7 @@ async function createAssets () {
       }
     }
   }
-  if ((count % 2000) !== 0 && res) {
+  if ((count % 255) !== 0 && res) {
     console.log('Confirming last tx: ' + res.txid + '. Total assets so far: ' + count + '. Remaining assets: ' + (assets.length - count))
     const confirmed = await confirmTx(res.txid)
     if (!confirmed) {
@@ -146,8 +147,7 @@ async function issueAssets () {
     let allocationOutputs = []
     while (values.length > 0) {
       const value = values.pop()
-      const balance = value.balance < 0? Number.MAX_SAFE_INTEGER :new sjs.utils.BN(value.balance).mul(new sjs.utils.BN(sjstx.utils.COIN))
-      const assetAllocationExists = await confirmAssetAllocation(value.address, assetGuid, balance)
+      const assetAllocationExists = await confirmAssetAllocation(value.address, assetGuid, value.balance)
       if (!assetAllocationExists) {
         allocationOutputs.push_back({ value: balance, address: value.address })
         // group outputs of an asset into up to 255 outputs per transaction
