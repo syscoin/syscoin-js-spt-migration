@@ -107,7 +107,7 @@ async function createAssets () {
       count++
       const txOpts = { rbf: false, assetGuid: asset.asset_guid }
       const pubdata = asset.public_value.description || asset.public_value
-      const maxsupply = asset.max_supply < 0? Number.MAX_SAFE_INTEGER :new sjs.utils.BN(asset.max_supply).mul(new sjs.utils.BN(sjstx.utils.COIN))
+      const maxsupply = asset.max_supply < 0? new sjs.utils.BN(Number.MAX_SAFE_INTEGER) :new sjs.utils.BN(asset.max_supply).mul(new sjs.utils.BN(sjstx.utils.COIN))
       const assetOpts = { precision: asset.precision, symbol: asset.symbol, maxsupply: maxsupply, description: pubdata.slice(0, 128) }
       res = await newAsset(assetOpts, txOpts)
       if (!res) {
