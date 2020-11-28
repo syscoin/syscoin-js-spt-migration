@@ -106,7 +106,8 @@ async function createAssets () {
     if (!assetExists) {
       count++
       const txOpts = { rbf: false, assetGuid: asset.asset_guid }
-      const pubdata = asset.public_value.description || asset.public_value
+      const currentPubDataJson = JSON.stringify(asset.public_value)
+      const pubdata = (currentPubDataJson && currentPubDataJson.description) || asset.public_value
       const maxsupply = asset.max_supply < 0? new sjs.utils.BN(Number.MAX_SAFE_INTEGER) :new sjs.utils.BN(asset.max_supply).mul(new sjs.utils.BN(sjstx.utils.COIN))
       const assetOpts = { precision: asset.precision, symbol: asset.symbol, maxsupply: maxsupply, description: pubdata.slice(0, 128) }
       res = await newAsset(assetOpts, txOpts)
@@ -212,7 +213,7 @@ async function transferAssets () {
         console.log('Could not transfer asset, exiting...')
         return
       }
-      if ((count % 2000) === 0) {
+      if ((count % 255) === 0) {
         console.log('Confirming tx: ' + res.txid + '. Total assets so far: ' + count + '. Remaining assets: ' + (assets.length - count))
         const confirmed = await confirmTx(res.txid)
         if (!confirmed) {
@@ -223,7 +224,7 @@ async function transferAssets () {
       res = null
     }
   }
-  if ((count % 2000) !== 0 && res) {
+  if ((count % 255) !== 0 && res) {
     console.log('Confirming last tx: ' + res.txid + '. Total assets so far: ' + count + '. Remaining assets: ' + (assets.length - count))
     const confirmed = await confirmTx(res.txid)
     if (!confirmed) {
