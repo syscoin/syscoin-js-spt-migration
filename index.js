@@ -106,7 +106,8 @@ async function createAssets () {
     if (!assetExists) {
       count++
       const txOpts = { rbf: false, assetGuid: asset.asset_guid }
-      const assetOpts = { precision: asset.precision, symbol: asset.symbol, maxsupply: new sjs.utils.BN(asset.max_supply).mul(new sjs.utils.BN(sjstx.utils.COIN)), description: asset.public_value.slice(0, 128) }
+      const pubdata = asset.public_value.description || asset.public_value
+      const assetOpts = { precision: asset.precision, symbol: asset.symbol, maxsupply: new sjs.utils.BN(asset.max_supply).mul(new sjs.utils.BN(sjstx.utils.COIN)), description: pubdata.slice(0, 128) }
       res = await newAsset(assetOpts, txOpts)
       if (!res) {
         console.log('Could not create assets, transaction not confirmed, exiting...')
@@ -254,7 +255,7 @@ async function newAsset (assetOpts, txOpts) {
   } else if (resSend.result) {
     console.log('tx successfully sent! txid: ' + resSend.result)
   } else {
-    console.log('Unrecognized response from backend')
+    console.log('Unrecognized response from backend: ' + resSend)
     return null
   }
   return { txid: resSend.result }
@@ -277,7 +278,7 @@ async function transferAsset (assetGuid, address) {
   } else if (resSend.result) {
     console.log('tx successfully sent! txid: ' + resSend.result)
   } else {
-    console.log('Unrecognized response from backend')
+    console.log('Unrecognized response from backend: ' + resSend)
     return null
   }
   return { txid: resSend.result }
@@ -301,7 +302,7 @@ async function issueAsset (assetMap) {
   } else if (resSend.result) {
     console.log('tx successfully sent! txid: ' + resSend.result)
   } else {
-    console.log('Unrecognized response from backend')
+    console.log('Unrecognized response from backend: ' + resSend)
     return null
   }
   return { txid: resSend.result }
