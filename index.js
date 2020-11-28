@@ -101,14 +101,14 @@ async function createAssets () {
     if (!confirmAsset(asset.asset_guid)) {
       count++
       const txOpts = { rbf: false, assetGuid: asset.asset_guid }
-      const assetOpts = { precision: asset.precision, symbol: asset.symbol, maxsupply: new sjs.utils.BN(asset.max_supply).mul(sjstx.utils.COIN), description: asset.public_value }
+      const assetOpts = { precision: asset.precision, symbol: asset.symbol, maxsupply: new sjs.utils.BN(asset.max_supply).mul(sjstx.utils.COIN), description: asset.public_value.slice(0, 128) }
       res = await newAsset(assetOpts, txOpts)
       if (!res) {
         console.log('Could not create assets, transaction not confirmed, exiting...')
         return
       }
-      if ((count % 10) === 0) {
-        console.log('Confirming tx: ' + res.txid + '. Total assets so far: ' + (count + 1) + '. Remaining assets: ' + (assets.length - (count + 1)))
+      if ((count % 2000) === 0) {
+        console.log('Confirming tx: ' + res.txid + '. Total assets so far: ' + count + '. Remaining assets: ' + (assets.length - count))
         const confirmed = await confirmTx(res.txid)
         if (!confirmed) {
           console.log('Could not create assets, transaction not confirmed, exiting...')
@@ -118,8 +118,8 @@ async function createAssets () {
       }
     }
   }
-  if ((count % 10) !== 0 && res) {
-    console.log('Confirming last tx: ' + res.txid + '. Total assets so far: ' + (count + 1) + '. Remaining assets: ' + (assets.length - (count + 1)))
+  if ((count % 2000) !== 0 && res) {
+    console.log('Confirming last tx: ' + res.txid + '. Total assets so far: ' + count + '. Remaining assets: ' + (assets.length - count))
     const confirmed = await confirmTx(res.txid)
     if (!confirmed) {
       console.log('Could not create assets, transaction not confirmed, exiting...')
@@ -155,8 +155,8 @@ async function issueAssets () {
             console.log('Could not issue asset tx, exiting...')
             return
           }
-          // every 2000 outputs we wait for a new block
-          if (currentOutputCount >= 2000) {
+          // every 3000 outputs we wait for a new block
+          if (currentOutputCount >= 3000) {
             currentOutputCount = 0
             console.log('Confirming tx: ' + res.txid + '. Total asset allocations so far: ' + totalOutputCount + '. Remaining allocations: ' + (assetallocations.count - totalOutputCount))
             const confirmed = await confirmTx(res.txid)
