@@ -203,9 +203,13 @@ async function issueAssets () {
           allocationOutputs = []
           await sleep(1500)
         }
+      } else {
+        totalOutputCount++
       }
     }
     if (allocationOutputs.length > 0) {
+      currentOutputCount += allocationOutputs.length
+      totalOutputCount += allocationOutputs.length
       const assetMap = new Map([
         [assetGuid, { outputs: allocationOutputs }]
       ])
