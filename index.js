@@ -7,6 +7,7 @@ const backendURL = 'http://localhost:19035' // if using localhost you don't need
 const HDSigner = new sjs.utils.HDSigner(mnemonic, null, true)
 const syscoinjs = new sjs.SyscoinJSLib(HDSigner, backendURL)
 const whitelist = []
+const NUMOUTPUTS_TX = 255
 function readAssets () {
   console.log('Reading assets.json file...')
   const assets = require('./assets.json')
@@ -63,7 +64,7 @@ async function confirmAssetAllocation (address, assetGuid, balance) {
 }
 async function confirmAccount () {
   const utxoObj = await sjs.utils.fetchBackendAccount(syscoinjs.blockbookURL, HDSigner.getAccountXpub(), null, true)
-  return(utxoObj.balance && utxoObj.balance !== "0")
+  return (utxoObj.balance && utxoObj.balance !== '0')
 }
 
 function sleep (ms) {
@@ -112,14 +113,14 @@ async function createAssets () {
       // largest decimal amount that we can use, without compression overflow of uint (~1 quintillion satoshis)
       // 10^18 - 1
       // use limit if supply was negative meaning max supply
-      const maxsupply = asset.max_supply < 0? new sjs.utils.BN("999999999999999999") :new sjs.utils.BN(asset.max_supply).mul(new sjs.utils.BN(sjstx.utils.COIN))
+      const maxsupply = asset.max_supply < 0 ? new sjs.utils.BN('999999999999999999') : new sjs.utils.BN(asset.max_supply).mul(new sjs.utils.BN(sjstx.utils.COIN))
       const assetOpts = { precision: asset.precision, symbol: asset.symbol, maxsupply: maxsupply, description: pubdata.slice(0, 128) }
       res = await newAsset(assetOpts, txOpts)
       if (!res) {
         console.log('Could not create assets, transaction not confirmed, exiting...')
         return
       }
-      if ((count % 255) === 0) {
+      if ((count % NUMOUTPUTS_TX) === 0) {
         console.log('Confirming tx: ' + res.txid + '. Total assets so far: ' + count + '. Remaining assets: ' + (assets.length - count))
         const confirmed = await confirmTx(res.txid)
         if (!confirmed) {
@@ -130,7 +131,7 @@ async function createAssets () {
       }
     }
   }
-  if ((count % 255) !== 0 && res) {
+  if ((count % NUMOUTPUTS_TX) !== 0 && res) {
     console.log('Confirming last tx: ' + res.txid + '. Total assets so far: ' + count + '. Remaining assets: ' + (assets.length - count))
     const confirmed = await confirmTx(res.txid)
     if (!confirmed) {
@@ -154,9 +155,9 @@ async function issueAssets () {
       const value = values.pop()
       const assetAllocationExists = await confirmAssetAllocation(value.address, assetGuid, value.balance)
       if (!assetAllocationExists) {
-        allocationOutputs.push_back({ value: balance, address: value.address })
-        // group outputs of an asset into up to 255 outputs per transaction
-        if (allocationOutputs.length >= 255) {
+        allocationOutputs.push_back({ value: value.balance, address: value.address })
+        // group outputs of an asset into up to NUMOUTPUTS_TX outputs per transaction
+        if (allocationOutputs.length >= NUMOUTPUTS_TX) {
           currentOutputCount += allocationOutputs.length
           totalOutputCount += allocationOutputs.length
           const assetMap = new Map([
@@ -217,7 +218,7 @@ async function transferAssets () {
         console.log('Could not transfer asset, exiting...')
         return
       }
-      if ((count % 255) === 0) {
+      if ((count % NUMOUTPUTS_TX) === 0) {
         console.log('Confirming tx: ' + res.txid + '. Total assets so far: ' + count + '. Remaining assets: ' + (assets.length - count))
         const confirmed = await confirmTx(res.txid)
         if (!confirmed) {
@@ -228,7 +229,7 @@ async function transferAssets () {
       res = null
     }
   }
-  if ((count % 255) !== 0 && res) {
+  if ((count % NUMOUTPUTS_TX) !== 0 && res) {
     console.log('Confirming last tx: ' + res.txid + '. Total assets so far: ' + count + '. Remaining assets: ' + (assets.length - count))
     const confirmed = await confirmTx(res.txid)
     if (!confirmed) {
@@ -312,10 +313,44 @@ async function issueAsset (assetMap) {
   }
   return { txid: resSend.result }
 }
+async function sendSys () {
+  console.log('Allocating SYS to ' + NUMOUTPUTS_TX + ' outputs (1 SYS each)...')
+  const feeRate = new sjs.utils.BN(10)
+  const txOpts = { rbf: false }
+  // let HDSigner find change address
+  const sysChangeAddress = null
+  const outputsArr = []
+  // send 1 coin to NUMOUTPUTS_TX outputs so we can respend NUMOUTPUTS_TX times in a block for asset transactions (new,update,issue assets)
+  for (let i = 0; i < NUMOUTPUTS_TX; i++) {
+    outputsArr.push_back({ address: HDSigner.getNewReceivingAddress(), value: new sjs.utils.BN(100000000) })
+  }
+  const psbt = await syscoinjs.createTransaction(txOpts, sysChangeAddress, outputsArr, feeRate)
+  if (!psbt) {
+    console.log('Could not create transaction, not enough funds?')
+    return false
+  }
+  // example of once you have it signed you can push it to network via backend provider
+  const resSend = await sjs.utils.sendRawTransaction(syscoinjs.blockbookURL, psbt.extractTransaction().toHex(), HDSigner)
+  if (resSend.error) {
+    console.log('could not send tx! error: ' + resSend.error.message)
+  } else if (resSend.result) {
+    console.log('tx successfully sent! txid: ' + resSend.result)
+  } else {
+    console.log('Unrecognized response from backend: ' + resSend)
+  }
+  console.log('Waiting for confirmation for: ' + resSend.txid)
+  const confirmed = await confirmTx(resSend.txid)
+  if (!confirmed) {
+    console.log('Could not transfer asset, transaction not confirmed, exiting...')
+    return false
+  }
+  console.log('Confirmed, we are now ready to create up to ' + NUMOUTPUTS_TX + ' assets per block!')
+  return true
+}
 
 async function main () {
-  const doesAccountExist = await confirmAccount();
-  if(!doesAccountExist) {
+  const doesAccountExist = await confirmAccount()
+  if (!doesAccountExist) {
     console.log('Invalid account specified to HDSigner, no UTXOs present...')
     return
   }
@@ -324,7 +359,10 @@ async function main () {
     return
   }
   if (process.argv[2] === 'createassets') {
-    await createAssets()
+    const sendSysRes = await sendSys()
+    if (sendSysRes) {
+      await createAssets()
+    }
   } else if (process.argv[2] === 'issueassets') {
     await issueAssets()
   } else if (process.argv[2] === 'transferassets') {
