@@ -54,13 +54,14 @@ function readAssetAllocations () {
 async function confirmAssetAllocation (address, assetGuid, balance) {
   const utxoObj = await sjs.utils.fetchBackendUTXOS(syscoinjs.blockbookURL, address)
   if (utxoObj.utxos) {
-    utxoObj.utxos.forEach(utxo => {
+    for (let i = 0; i < utxoObj.utxos.length; i++) {
+      const utxo = utxoObj.utxos[i]
       if (utxo.assetInfo) {
         if (utxo.address === address && utxo.assetInfo.assetGuid === assetGuid && new sjs.utils.BN(utxo.assetInfo.value).eq(balance)) {
           return true
         }
       }
-    })
+    }
   }
   return false
 }
