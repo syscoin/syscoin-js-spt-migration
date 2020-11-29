@@ -347,7 +347,7 @@ async function sendSys () {
   console.log('Waiting for confirmation for: ' + resSend.result)
   const confirmed = await confirmTx(resSend.result)
   if (!confirmed) {
-    console.log('Could not transfer asset, transaction not confirmed, exiting...')
+    console.log('Could not send SYS, transaction not confirmed, exiting...')
     return false
   }
   console.log('Confirmed, we are now ready to create up to ' + NUMOUTPUTS_TX + ' assets per block!')
