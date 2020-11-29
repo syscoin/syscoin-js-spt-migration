@@ -41,14 +41,14 @@ function readAssetAllocations () {
       assetallocationsMap.set(allocation.asset_guid, [allocation])
     }
   }
-  assetallocationsMap.forEach(function (value, key, map) {
+  for (const [key, value] of assetallocationsMap.entries()) {
     const assetAllocation = whitelist.find(voutAsset => voutAsset.asset_guid === key)
     if (whitelist.length > 0 && assetAllocation === undefined) {
-      map.delete(key)
+      assetallocationsMap.delete(key)
     } else {
       totalCount += value.length
     }
-  })
+  }
   return { map: assetallocationsMap, count: totalCount }
 }
 async function confirmAssetAllocation (address, assetGuid, balance) {
@@ -166,14 +166,14 @@ async function issueAssets () {
   console.log('Issuing asset allocations...')
   let currentOutputCount = 0
   let totalOutputCount = 0
-  assetallocations.map.forEach(async function (values, key) {
+  for (const [key, values] of assetallocations.map.entries()) {
     const assetGuid = key
     let allocationOutputs = []
     while (values.length > 0) {
       const value = values.pop()
       const assetAllocationExists = await confirmAssetAllocation(value.address, assetGuid, value.balance)
       if (!assetAllocationExists) {
-        allocationOutputs.push({ value: sjs.utils.BN(value.balance), address: value.address })
+        allocationOutputs.push({ value: value.balance, address: value.address })
         // group outputs of an asset into up to NUMOUTPUTS_TX outputs per transaction
         if (allocationOutputs.length >= NUMOUTPUTS_TX) {
           currentOutputCount += allocationOutputs.length
@@ -214,9 +214,10 @@ async function issueAssets () {
       const confirmed = await confirmTx(res.txid)
       if (!confirmed) {
         console.log('Could not issue asset, transaction not confirmed, exiting...')
+        return
       }
     }
-  })
+  }
   if (totalOutputCount > 0) {
     console.log('Done, issued ' + totalOutputCount + ' asset allocations!')
   }
