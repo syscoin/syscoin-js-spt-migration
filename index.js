@@ -9,6 +9,7 @@ const syscoinjs = new sjs.SyscoinJSLib(HDSigner, backendURL)
 const whitelist = []
 const NUMOUTPUTS_TX = 255
 const assetCostWithFee = new sjs.utils.BN(151).mul(new sjs.utils.BN(sjstx.utils.COIN))
+const maxAsset = new sjs.utils.BN('999999999999999999')
 function readAssets () {
   console.log('Reading assets.json file...')
   const assets = require('./assets.json')
@@ -114,7 +115,10 @@ async function createAssets () {
       // largest decimal amount that we can use, without compression overflow of uint (~1 quintillion satoshis)
       // 10^18 - 1 (999999999999999999)
       // use limit if supply was negative meaning max supply
-      const maxsupply = (asset.max_supply < 0 ||  asset.max_supply > 999999999999999999)? new sjs.utils.BN('999999999999999999') : new sjs.utils.BN(asset.max_supply).mul(new sjs.utils.BN(sjstx.utils.COIN))
+      const maxsupplyBN = new sjs.utils.BN(asset.max_supply)
+      // scale asset amount by precision to get total satoshis
+      const precisionScalar = new sjs.utils.BN(10).pow(new sjs.utils.BN(asset.precision))
+      const maxsupply = (asset.max_supply < 0 || maxsupplyBN.gt(maxAsset))? maxAsset : maxsupplyBN.mul(precisionScalar)
       const assetOpts = { precision: asset.precision, symbol: asset.symbol, maxsupply: maxsupply, description: pubdata.slice(0, 128) }
       res = await newAsset(assetOpts, txOpts)
       if (!res) {
