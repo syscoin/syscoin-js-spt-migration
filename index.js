@@ -168,7 +168,6 @@ async function createAssets () {
 async function issueAssets () {
   const assetallocations = readAssetAllocations()
   console.log('Issuing asset allocations...')
-  let currentOutputCount = 0
   let totalOutputCount = 0
   for (const [key, values] of assetallocations.map.entries()) {
     const assetGuid = Math.floor(key / 2) // HACK for now
@@ -179,9 +178,7 @@ async function issueAssets () {
       const assetAllocationExists = await confirmAssetAllocation(value.address, assetGuid, balanceBN)
       if (!assetAllocationExists) {
         allocationOutputs.push({ value: balanceBN, address: value.address })
-        // group outputs of an asset into up to NUMOUTPUTS_TX outputs per transaction
-        if (allocationOutputs.length >= NUMOUTPUTS_TX) {
-          currentOutputCount += allocationOutputs.length
+        if (allocationOutputs.length >= 3000) {
           totalOutputCount += allocationOutputs.length
           const assetMap = new Map([
             [assetGuid, { outputs: allocationOutputs }]
@@ -191,16 +188,13 @@ async function issueAssets () {
             console.log('Could not issue asset tx, exiting...')
             return
           }
-          // every 3000 outputs we wait for a new block
-          if (currentOutputCount >= 3000) {
-            currentOutputCount = 0
-            console.log('Confirming tx: ' + res.txid + '. Total asset allocations so far: ' + totalOutputCount + '. Remaining allocations: ' + (assetallocations.count - totalOutputCount))
-            const confirmed = await confirmTx(res.txid)
-            if (!confirmed) {
-              console.log('Could not issue asset, transaction not confirmed, exiting...')
-              return
-            }
+          console.log('Confirming tx: ' + res.txid + '. Total asset allocations so far: ' + totalOutputCount + '. Remaining allocations: ' + (assetallocations.count - totalOutputCount))
+          const confirmed = await confirmTx(res.txid)
+          if (!confirmed) {
+            console.log('Could not issue asset, transaction not confirmed, exiting...')
+            return
           }
+
           allocationOutputs = []
           await sleep(1500)
         }
@@ -209,7 +203,6 @@ async function issueAssets () {
       }
     }
     if (allocationOutputs.length > 0) {
-      currentOutputCount += allocationOutputs.length
       totalOutputCount += allocationOutputs.length
       const assetMap = new Map([
         [assetGuid, { outputs: allocationOutputs }]
