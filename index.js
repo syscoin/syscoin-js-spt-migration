@@ -399,6 +399,7 @@ async function main () {
   }
   if (process.argv[2] === 'createassets') {
     const sendSysRes = await sendSys()
+    await sleep(1500)
     if (sendSysRes) {
       await createAssets()
     }
