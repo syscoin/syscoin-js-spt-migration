@@ -317,19 +317,18 @@ async function issueAsset (assetMap) {
 
 async function sendSys () {
   const utxoObj = await sjs.utils.fetchBackendUTXOS(syscoinjs.blockbookURL, HDSigner.getAccountXpub(), 'confirmed=true')
-  const utxoBNVal = new sjs.utils.BN(utxoObj.utxos[i].value)
-  if(utxoObj.utxos.length >= NUMOUTPUTS_TX) {
+  if (utxoObj.utxos.length >= NUMOUTPUTS_TX) {
     let count = 0
-    for(let i =0;i<utxoObj.utxos.length;i++) {
+    for (let i = 0; i < utxoObj.utxos.length; i++) {
       const utxoBNVal = new sjs.utils.BN(utxoObj.utxos[i].value)
-      if(utxoBNVal.gte(assetCostWithFee)) {
+      if (utxoBNVal.gte(assetCostWithFee)) {
         count++
-        if(count > NUMOUTPUTS_TX) {
+        if (count > NUMOUTPUTS_TX) {
           break
         }
       }
     }
-    if(count > NUMOUTPUTS_TX) {
+    if (count > NUMOUTPUTS_TX) {
       console.log('There are already ' + count + ' UTXOs to fund new assets in this account, proceeding with creating assets!')
       return true
     }
@@ -339,7 +338,7 @@ async function sendSys () {
   const txOpts = { rbf: false }
   // let HDSigner find change address
   const sysChangeAddress = null
-  let outputsArr = []
+  const outputsArr = []
   // send assetCostWithFee amount to NUMOUTPUTS_TX outputs so we can respend NUMOUTPUTS_TX times in a block for asset transactions (new,update,issue assets)
   for (let i = 0; i < NUMOUTPUTS_TX; i++) {
     outputsArr.push({ address: await HDSigner.getNewReceivingAddress(), value: assetCostWithFee })
