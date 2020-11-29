@@ -16,7 +16,7 @@ function readAssets () {
     for (let i = 0; i < assets.length; i++) {
       const assetAllocation = whitelist.find(voutAsset => voutAsset.asset_guid === assets[i].asset_guid)
       if (assetAllocation !== undefined) {
-        assetsToReturn.push_back(assets[i])
+        assetsToReturn.push(assets[i])
       }
     }
   } else {
@@ -34,7 +34,7 @@ function readAssetAllocations () {
     const allocation = assetallocations[i]
     if (assetallocationsMap.has(allocation.asset_guid)) {
       const allocations = assetallocationsMap.get(allocation.asset_guid)
-      allocations.push_back(allocation)
+      allocations.push(allocation)
     } else {
       assetallocationsMap.set(allocation.asset_guid, [allocation])
     }
@@ -155,7 +155,7 @@ async function issueAssets () {
       const value = values.pop()
       const assetAllocationExists = await confirmAssetAllocation(value.address, assetGuid, value.balance)
       if (!assetAllocationExists) {
-        allocationOutputs.push_back({ value: value.balance, address: value.address })
+        allocationOutputs.push({ value: value.balance, address: value.address })
         // group outputs of an asset into up to NUMOUTPUTS_TX outputs per transaction
         if (allocationOutputs.length >= NUMOUTPUTS_TX) {
           currentOutputCount += allocationOutputs.length
@@ -313,6 +313,7 @@ async function issueAsset (assetMap) {
   }
   return { txid: resSend.result }
 }
+
 async function sendSys () {
   console.log('Allocating SYS to ' + NUMOUTPUTS_TX + ' outputs (1 SYS each)...')
   const feeRate = new sjs.utils.BN(10)
@@ -322,7 +323,7 @@ async function sendSys () {
   let outputsArr = []
   // send 1 coin to NUMOUTPUTS_TX outputs so we can respend NUMOUTPUTS_TX times in a block for asset transactions (new,update,issue assets)
   for (let i = 0; i < NUMOUTPUTS_TX; i++) {
-    outputsArr.push_back({ address: HDSigner.getNewReceivingAddress(), value: new sjs.utils.BN(100000000) })
+    outputsArr.push({ address: HDSigner.getNewReceivingAddress(), value: new sjs.utils.BN(100000000) })
   }
   const psbt = await syscoinjs.createTransaction(txOpts, sysChangeAddress, outputsArr, feeRate)
   if (!psbt) {
