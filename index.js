@@ -75,11 +75,12 @@ function sleep (ms) {
 async function confirmAsset (assetGuid, address) {
   const utxoObj = await sjs.utils.fetchBackendUTXOS(syscoinjs.blockbookURL, address)
   if (utxoObj.assets) {
-    utxoObj.assets.forEach(asset => {
+    for (let i = 0; i < utxoObj.assets.length; i++) {
+      const asset = utxoObj.assets[i]
       if (asset.assetGuid === assetGuid) {
         return true
       }
-    })
+    }
   }
   return false
 }
