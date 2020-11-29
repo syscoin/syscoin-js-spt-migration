@@ -113,16 +113,10 @@ async function createAssets () {
       // largest decimal amount that we can use, without compression overflow of uint (~1 quintillion satoshis)
       // 10^18 - 1 (999999999999999999)
       // use limit if supply was negative meaning max supply
+      asset.max_supply = asset.max_supply.replace('.', '')
       let maxSupplyBN = new sjs.utils.BN(asset.max_supply)
-      if (maxSupplyBN.isNeg()) {
+      if (maxSupplyBN.isNeg() || maxSupplyBN.gt(maxAsset)) {
         maxSupplyBN = maxAsset
-      } else {
-        // scale asset amount by precision to get total satoshis
-        const precisionScalar = new sjs.utils.BN(10).pow(new sjs.utils.BN(asset.precision))
-        maxSupplyBN = maxSupplyBN.mul(precisionScalar)
-        if (maxSupplyBN.gt(maxAsset)) {
-          maxSupplyBN = maxAsset
-        }
       }
       const assetOpts = { precision: asset.precision, symbol: asset.symbol, maxsupply: maxSupplyBN, description: pubdata.slice(0, 128) }
       res = await newAsset(assetOpts, txOpts)
