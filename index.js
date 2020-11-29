@@ -61,7 +61,7 @@ async function confirmAssetAllocation (address, assetGuid, balance) {
     for (let i = 0; i < utxoObj.utxos.length; i++) {
       const utxo = utxoObj.utxos[i]
       if (utxo.assetInfo) {
-        if (utxo.address === address && utxo.assetInfo.assetGuid === assetGuid && new sjs.utils.BN(utxo.assetInfo.value).eq(balance)) {
+        if (utxo.assetInfo.assetGuid === assetGuid && new sjs.utils.BN(utxo.assetInfo.value).eq(balance)) {
           return true
         }
       }
