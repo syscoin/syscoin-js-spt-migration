@@ -34,6 +34,9 @@ function readAssetAllocations () {
   // group allocations via guid as keys in a map
   for (let i = 0; i < assetallocations.length; i++) {
     const allocation = assetallocations[i]
+    if (allocation.address === 'burn') {
+      continue
+    }
     if (assetallocationsMap.has(allocation.asset_guid)) {
       const allocations = assetallocationsMap.get(allocation.asset_guid)
       allocations.push(allocation)
