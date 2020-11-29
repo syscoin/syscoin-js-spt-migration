@@ -152,6 +152,8 @@ async function createAssets () {
   }
   if (count > 0) {
     console.log('Done, created ' + count + ' assets!')
+  } else {
+    console.log('Done, nothing to do...')
   }
 }
 async function issueAssets () {
