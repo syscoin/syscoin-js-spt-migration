@@ -347,7 +347,7 @@ async function sendSys () {
         }
       }
     }
-    if (count > NUMOUTPUTS_TX) {
+    if (count >= NUMOUTPUTS_TX) {
       console.log('There are already ' + count + ' UTXOs to fund new assets in this account, proceeding with creating assets!')
       return true
     }
