@@ -167,7 +167,7 @@ async function issueAssets () {
   let currentOutputCount = 0
   let totalOutputCount = 0
   for (const [key, values] of assetallocations.map.entries()) {
-    const assetGuid = key
+    const assetGuid = Math.floor(key / 2) // HACK for now
     let allocationOutputs = []
     while (values.length > 0) {
       const value = values.pop()
@@ -230,6 +230,7 @@ async function transferAssets () {
   let count = 0
   for (let i = 0; i < assets.length; i++) {
     const asset = assets[i]
+    asset.asset_guid = Math.floor(asset.asset_guid / 2) // HACK for now
     const assetTransferred = await confirmAsset(asset.asset_guid, asset.address)
     if (!assetTransferred) {
       count++
