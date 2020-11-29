@@ -315,6 +315,11 @@ async function issueAsset (assetMap) {
 }
 
 async function sendSys () {
+  const utxoObj = await sjs.utils.fetchBackendUTXOS(syscoinjs.blockbookURL, HDSigner.getAccountXpub(), 'confirmed=true')
+  if(utxoObj.utxos.length >= NUMOUTPUTS_TX) {
+    console.log('There are already ' + utxoObj.utxos.length + ' utxos in this account, proceeding with creating assets!')
+    return true
+  }
   console.log('Allocating SYS to ' + NUMOUTPUTS_TX + ' outputs (1 SYS each)...')
   const feeRate = new sjs.utils.BN(10)
   const txOpts = { rbf: false }
@@ -339,8 +344,8 @@ async function sendSys () {
   } else {
     console.log('Unrecognized response from backend: ' + resSend)
   }
-  console.log('Waiting for confirmation for: ' + resSend.txid)
-  const confirmed = await confirmTx(resSend.txid)
+  console.log('Waiting for confirmation for: ' + resSend.result)
+  const confirmed = await confirmTx(resSend.result)
   if (!confirmed) {
     console.log('Could not transfer asset, transaction not confirmed, exiting...')
     return false
