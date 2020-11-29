@@ -1,6 +1,6 @@
 [
   {
-    "asset_guid": 11075685636,
+    "asset_guid": 1075685636,
     "symbol": "TVUB",
     "txid": "70c49adfc45bbd574688d6e70ff23d5150b91def19f112f238b1c4bc105d5da4",
     "public_value": "{\"description\":\"Irrelevant\"}",
@@ -13,7 +13,7 @@
     "precision": 8
   },
   {
-    "asset_guid": 11722190859,
+    "asset_guid": 1722190859,
     "symbol": "SPLIT4",
     "txid": "234ac169298f0351828ba1d84b60d66ec7724a14f4a2b82a7a38540dcbff0123",
     "public_value": "{\"description\":\"\"}",
@@ -26,7 +26,7 @@
     "precision": 8
   },
   {
-    "asset_guid": 11270929163,
+    "asset_guid": 1270929163,
     "symbol": "SYSTEST3",
     "txid": "1f1653ecc9a61ff8e9e943602e6294081c7bdb9d44cc4c95f87d2a5619acc6e0",
     "public_value": "{\"description\":\"asdf\"}",
@@ -39,7 +39,7 @@
     "precision": 8
   },
   {
-    "asset_guid": 1995500045,
+    "asset_guid": 995500045,
     "symbol": "VANCOUV",
     "txid": "c90bbe4b56285fb95fb661fb94cf7538af24cc736f43859e22e999fbd229661b",
     "public_value": "{\"description\":\"{\\\"description\\\":\\\"randugh om test erc20\\\"}\"}",
@@ -52,7 +52,7 @@
     "precision": 8
   },
   {
-    "asset_guid": 1146565650,
+    "asset_guid": 146565650,
     "symbol": "TAGX.S",
     "txid": "a39ba7fe439ef1304c118c4b381b1705d19f138e0ac360570ae4d43351ba155c",
     "public_value": "{\"description\":\"AGX Syscoin Testnet\"}",
@@ -65,7 +65,7 @@
     "precision": 8
   },
   {
-    "asset_guid": 1274025497,
+    "asset_guid": 274025497,
     "symbol": "DAN",
     "txid": "586edd96bffbe73517ca7577be425ade8b6fd0f7aa36b09d98d281d2ce378d80",
     "public_value": "{\"description\":\"{\\\"description\\\":\\\"test2\\\"}\"}",
@@ -78,7 +78,7 @@
     "precision": 8
   },
   {
-    "asset_guid": 1725695259,
+    "asset_guid": 725695259,
     "symbol": "SPLIT2",
     "txid": "cf40ee1b9b1463ac779daec511ad9f898b167c369230475933a936f1cd4b1cf1",
     "public_value": "{\"description\":\"\"}",
@@ -91,7 +91,7 @@
     "precision": 8
   },
   {
-    "asset_guid": 1289169700,
+    "asset_guid": 289169700,
     "symbol": "MULTISIG",
     "txid": "6ac4220be1772121d950b72f2f6b70051b554375905666638537b7bc47318037",
     "public_value": "{\"description\":\"\"}",
@@ -104,7 +104,7 @@
     "precision": 8
   },
   {
-    "asset_guid": 1296570927,
+    "asset_guid": 296570927,
     "symbol": "SPLIT1",
     "txid": "ee69f6d6dbd1269c07d2056c64b638512428a0cad94a4170a9ecaba82509e714",
     "public_value": "{\"description\":\"\"}",
@@ -117,7 +117,7 @@
     "precision": 8
   },
   {
-    "asset_guid": 1308265520,
+    "asset_guid": 308265520,
     "symbol": "DAI",
     "txid": "339addf5972bf9255894e00b730967488f4c8b0bb6e74954dd4c79e9f4330127",
     "public_value": "{\"description\":\"DAI Stablecoin Interchain Token\"}",
@@ -130,7 +130,7 @@
     "precision": 8
   },
   {
-    "asset_guid": 11431845689,
+    "asset_guid": 1431845689,
     "symbol": "BRICK",
     "txid": "0ad8aeaf4e17f7d3472d04a9016e78601954aa7e6c9d4a20d84e52b926c9767b",
     "public_value": "{\"description\":\"r/FortniteBR points\"}",
@@ -143,7 +143,7 @@
     "precision": 0
   },
   {
-    "asset_guid": 1794432826,
+    "asset_guid": 794432826,
     "symbol": "MIS",
     "txid": "0c9475c2c25d9f125f3996c4b4f3422a56c7a06503580ede8f20c0f94e98f043",
     "public_value": "{\"description\":\"Misstoken\"}",
@@ -156,7 +156,7 @@
     "precision": 8
   },
   {
-    "asset_guid": 1350890556,
+    "asset_guid": 350890556,
     "symbol": "TESTFEES",
     "txid": "9ae19c4d9c5212b689423b3623bdb01225d65d4986d66053966e1b1200553ced",
     "public_value": "{\"description\":\"test aux fees on 4.1\",\"aux_fees\":{\"address\":\"tsys1qz0pwj295fx4tdwz6gvat22e27nsh40ess4f20u\",\"fee_struct\":[[\"0\",\"0.01\"],[\"10\",\"0.004\"],[\"250\",\"0.002\"],[\"2500\",\"0.0007\"],[\"2500000\",\"0\"]]}}",
@@ -169,7 +169,7 @@
     "precision": 8
   },
   {
-    "asset_guid": 11130705728,
+    "asset_guid": 1130705728,
     "symbol": "SPLIT",
     "txid": "397668ddf5db58b7e336fb1efb614809c94f9fc24d7523cc9e430f3ab9836773",
     "public_value": "{\"description\":\"\"}",
@@ -182,7 +182,7 @@
     "precision": 0
   },
   {
-    "asset_guid": 1993383239,
+    "asset_guid": 993383239,
     "symbol": "TEST",
     "txid": "7a873b65f18bc1fea8c2a3a995677aeba086a9fa48b39684d2dda864def6eb35",
     "public_value": "{\"description\":\"test\"}",
@@ -195,7 +195,7 @@
     "precision": 8
   },
   {
-    "asset_guid": 11869202000,
+    "asset_guid": 1869202000,
     "symbol": "NOODS",
     "txid": "6bffe4f83f5831551314c210a3a417521055c929a82a2f5ebecee5706569a946",
     "public_value": "{\"description\":\"NOODS\"}",
@@ -208,7 +208,7 @@
     "precision": 0
   },
   {
-    "asset_guid": 12057952362,
+    "asset_guid": 2057952362,
     "symbol": "SPLIT6",
     "txid": "9184a9311efd0c00d3635d66440013f7673b3aec15700b3067f3d6ea34591e5e",
     "public_value": "{\"description\":\"\"}",
@@ -221,7 +221,7 @@
     "precision": 8
   },
   {
-    "asset_guid": 11770784107,
+    "asset_guid": 1770784107,
     "symbol": "MATIC",
     "txid": "7f864fa3fd1ba23f7ef2471b097bc192722c0a4f8d0043fe378cc8610d0923e4",
     "public_value": "{\"description\":\"Matic SPT\"}",
@@ -234,7 +234,7 @@
     "precision": 8
   },
   {
-    "asset_guid": 11354509676,
+    "asset_guid": 1354509676,
     "symbol": "CORONA1",
     "txid": "6e31cdcf40ba5f04bde2146fa3eaacf705dafb6493e50d96d707c31b396d0154",
     "public_value": "{\"description\":\"tsys1qd2ctga25f853ahncvl52fm87zavdrgpyvkdcgl\"}",
@@ -247,7 +247,7 @@
     "precision": 0
   },
   {
-    "asset_guid": 11146762609,
+    "asset_guid": 1146762609,
     "symbol": "PTEST",
     "txid": "a5fd9bed64a4c7bb018df5d9952e5131b96cee224de8d34ef56f90e2eaf953f7",
     "public_value": "{\"description\":\"Supply Precision Test SPT\"}",
@@ -260,7 +260,7 @@
     "precision": 8
   },
   {
-    "asset_guid": 11965866356,
+    "asset_guid": 1965866356,
     "symbol": "SYSX",
     "txid": "20d2275808f371e25daffab1ee93c9e00d9c4da77bed7b3d91c364e1f16c766e",
     "public_value": "{\"description\":\"Official Testnet SYSX SPT\"}",
@@ -273,7 +273,7 @@
     "precision": 8
   },
   {
-    "asset_guid": 11759712377,
+    "asset_guid": 1759712377,
     "symbol": "SPLIT3",
     "txid": "da037a17b909378e5147138304bac8909845b20a5636eb28ea9ea71f28e70b40",
     "public_value": "{\"description\":\"\"}",
@@ -286,7 +286,7 @@
     "precision": 8
   },
   {
-    "asset_guid": 1137553789,
+    "asset_guid": 137553789,
     "symbol": "xVCL",
     "txid": "b913ec1da6e5de981002f31a713b360f7f16e503c114c8f14d7b50eb80b0c572",
     "public_value": "{\"description\":\"xVCL\"}",
@@ -299,7 +299,7 @@
     "precision": 8
   },
   {
-    "asset_guid": 1610403710,
+    "asset_guid": 610403710,
     "symbol": "DAB",
     "txid": "583d7c99b9410b364a090a83e2500d3cc2059effdd3a58fcdf9bffe0258dd7fa",
     "public_value": "{\"description\":\"Dabbytoken\"}",
@@ -312,7 +312,7 @@
     "precision": 8
   },
   {
-    "asset_guid": 1410598014,
+    "asset_guid": 410598014,
     "symbol": "UF_TEST1",
     "txid": "fbd6b26b80b5ba0aa355938c4273a7f3f0ca0186533caa83e0be4e34ba525825",
     "public_value": "{\"description\":\"Update_flags test-1\",\"aux_fees\":{\"address\":\"tsys1qm9xqng9xnx5dax2uws7tumn8trx830nxmvv6ms\",\"fee_struct\":[[\"0\",\"0.03\"],[\"10\",\"0.004\"],[\"250\",\"0.002\"],[\"2500\",\"0.0007\"],[\"25000\",\"0.00007\"],[\"250000\",\"0.000007\"]]}}",
@@ -325,7 +325,7 @@
     "precision": 8
   },
   {
-    "asset_guid": 1884449420,
+    "asset_guid": 884449420,
     "symbol": "NEGBAL",
     "txid": "4e97d0b46674cbc23bb526923bcbc4ab737584a8005bf86246c6152d80e66e0d",
     "public_value": "{\"description\":\"\"}",
@@ -338,7 +338,7 @@
     "precision": 8
   },
   {
-    "asset_guid": 11312171661,
+    "asset_guid": 1312171661,
     "symbol": "TESTC",
     "txid": "80d48bfb19dd2215d5fb6c4865e697140aec430bca9f9cf883b1a5bd1a433537",
     "public_value": "{\"description\":\"TESTC\"}",
@@ -351,7 +351,7 @@
     "precision": 8
   },
   {
-    "asset_guid": 11694191254,
+    "asset_guid": 1694191254,
     "symbol": "JOHNP1",
     "txid": "951c4d66b8d800a658c78a1c7ac9b446b868a2c6a555330ff4118452012d7601",
     "public_value": "{\"description\":\"johnp1\"}",
@@ -364,7 +364,7 @@
     "precision": 8
   },
   {
-    "asset_guid": 12110684334,
+    "asset_guid": 2110684334,
     "symbol": "ANI",
     "txid": "cb0a9c81679abd4f11668ef216a696ac1fe991d3135cf9c43259049da2f1ec49",
     "public_value": "{\"description\":\"Anakin Skywalker Coin\"}",
@@ -377,7 +377,7 @@
     "precision": 8
   },
   {
-    "asset_guid": 1884628666,
+    "asset_guid": 884628666,
     "symbol": "xAAA",
     "txid": "bca58eeabb6ce47b6c5f99ac21436b14c3e6c48f5686477c7088a1d8787ab244",
     "public_value": "{\"description\":\"xAAAToken\"}",
@@ -390,7 +390,7 @@
     "precision": 8
   },
   {
-    "asset_guid": 11733842364,
+    "asset_guid": 1733842364,
     "symbol": "SILA",
     "txid": "820ad9746f037932dd598b3c2691444bad0ba53d1ebb59bb4fa36d797415ebef",
     "public_value": "{\"description\":\"SILAUSD SPT\"}",
@@ -403,7 +403,7 @@
     "precision": 8
   },
   {
-    "asset_guid": 1478740419,
+    "asset_guid": 478740419,
     "symbol": "JH1",
     "txid": "024a5c55234e9b62323e804714e1834b5dd0fa63063431807930a09b6d86b57f",
     "public_value": "{\"description\":\"JH1\",\"aux_fees\":{\"address\":\"tsys1qnfmjwjqn24z5m2t493m258fssaahv69gcx6q6p\",\"fee_struct\":[[\"1.5\",\"100\"]]}}",
@@ -416,7 +416,7 @@
     "precision": 1
   },
   {
-    "asset_guid": 12054270666,
+    "asset_guid": 2054270666,
     "symbol": "eVcl",
     "txid": "3a7fc1e65128fbd82b1570a711ef4dd54c34857a29f90a990d24b593860b2cd2",
     "public_value": "{\"description\":\"Eth-Vircles Token\"}",
@@ -429,7 +429,7 @@
     "precision": 8
   },
   {
-    "asset_guid": 11799289292,
+    "asset_guid": 1799289292,
     "symbol": "SILA",
     "txid": "f297bcbc3e4632917fb831305405f137d083cd9cb82004bc8e9826c1626f1e39",
     "public_value": "{\"description\":\"SILAUSD SPT\"}",
@@ -442,7 +442,7 @@
     "precision": 8
   },
   {
-    "asset_guid": 1283669714,
+    "asset_guid": 283669714,
     "symbol": "AUXF",
     "txid": "a98e7db27a1a09772a11237a8d777101d33e7a99baa50528cf27ebf31e6460ec",
     "public_value": "{\"description\":\"Aux_fees Test Token\",\"aux_fees\":{\"address\":\"tsys1qm9xqng9xnx5dax2uws7tumn8trx830nxmvv6ms\",\"fee_struct\":[[\"0\",\"0.01\"],[\"10\",\"0.004\"],[\"250\",\"0.002\"],[\"2500\",\"0.0007\"],[\"25000\",\"0.00007\"],[\"250000\",\"0.000007\"]]}}",
@@ -455,7 +455,7 @@
     "precision": 8
   },
   {
-    "asset_guid": 11169008602,
+    "asset_guid": 1169008602,
     "symbol": "UFT_t2",
     "txid": "7ae748a6b8e0f5be46cc9ddfa53cda97cbb408cd54681f4c0bdfc6db884c3ce7",
     "public_value": "{\"description\":\"Update_flags test lock\"}",
@@ -468,7 +468,7 @@
     "precision": 8
   },
   {
-    "asset_guid": 11418144224,
+    "asset_guid": 1418144224,
     "symbol": "DAI",
     "txid": "7b9eec7d671b3b8712a00a3e9266bd26840f29da6d49defbcf189d50125fc22f",
     "public_value": "{\"description\":\"DAI Stablecoin Interchain Token\"}",
@@ -481,7 +481,7 @@
     "precision": 8
   },
   {
-    "asset_guid": 12018075631,
+    "asset_guid": 2018075631,
     "symbol": "SPLIT5",
     "txid": "425d96c32f33071dd4d70bf3fe2937b420ebc72c853f6982a30b7c51ba392140",
     "public_value": "{\"description\":\"\"}",
@@ -494,7 +494,7 @@
     "precision": 8
   },
   {
-    "asset_guid": 12132382194,
+    "asset_guid": 2132382194,
     "symbol": "NEGBAL",
     "txid": "3cc607e75efd014a198878b698257d3f6001f5509df3e0a944a5883eb083ee41",
     "public_value": "{\"description\":\"\"}",
@@ -507,7 +507,7 @@
     "precision": 8
   },
   {
-    "asset_guid": 11977137914,
+    "asset_guid": 1977137914,
     "symbol": "MIS",
     "txid": "cadd0658fbb5f267eb7ea4a4246a5fb7dc82f596a7443d92e4e453cd94350bfd",
     "public_value": "{\"description\":\"mistoken\"}",
