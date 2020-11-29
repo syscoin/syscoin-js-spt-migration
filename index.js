@@ -355,6 +355,7 @@ async function sendSys () {
 }
 
 async function main () {
+  console.log('Account XPUB: ' + HDSigner.getAccountXpub())
   const doesAccountExist = await confirmAccount()
   if (!doesAccountExist) {
     console.log('Invalid account specified to HDSigner, no UTXOs present...')
