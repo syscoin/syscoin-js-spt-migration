@@ -74,6 +74,11 @@ function sleep (ms) {
   return new Promise(resolve => setTimeout(resolve, ms))
 }
 async function confirmAsset (assetGuid, address) {
+  // either asset has confirmed or its in mempool as seen by utxo query
+  const asset = await sjs.utils.fetchBackendAsset(syscoinjs.blockbookURL, assetGuid)
+  if (asset && asset.assetGuid === assetGuid) {
+    return true
+  }
   const utxoObj = await sjs.utils.fetchBackendUTXOS(syscoinjs.blockbookURL, address)
   if (utxoObj.assets) {
     for (let i = 0; i < utxoObj.assets.length; i++) {
@@ -83,6 +88,7 @@ async function confirmAsset (assetGuid, address) {
       }
     }
   }
+
   return false
 }
 async function confirmTx (txid) {
