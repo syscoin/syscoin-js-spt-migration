@@ -109,6 +109,7 @@ async function createAssets () {
   let count = 0
   for (let i = 0; i < assets.length; i++) {
     const asset = assets[i]
+    asset.asset_guid = asset.asset_guid/2 // HACK for now
     const assetExists = await confirmAsset(asset.asset_guid, HDSigner.getAccountXpub())
     if (!assetExists) {
       count++
