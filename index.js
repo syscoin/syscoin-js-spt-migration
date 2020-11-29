@@ -323,7 +323,7 @@ async function sendSys () {
   let outputsArr = []
   // send 1 coin to NUMOUTPUTS_TX outputs so we can respend NUMOUTPUTS_TX times in a block for asset transactions (new,update,issue assets)
   for (let i = 0; i < NUMOUTPUTS_TX; i++) {
-    outputsArr.push({ address: HDSigner.getNewReceivingAddress(), value: new sjs.utils.BN(100000000) })
+    outputsArr.push({ address: await HDSigner.getNewReceivingAddress(), value: new sjs.utils.BN(100000000) })
   }
   const psbt = await syscoinjs.createTransaction(txOpts, sysChangeAddress, outputsArr, feeRate)
   if (!psbt) {
