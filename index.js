@@ -179,7 +179,7 @@ async function issueAssets () {
       if (!assetAllocationExists) {
         allocationOutputs.push({ value: balanceBN, address: value.address })
         // group outputs of an asset into up to NUMOUTPUTS_TX outputs per transaction
-        if (allocationOutputs.length >= 1000) {
+        if (allocationOutputs.length >= NUMOUTPUTS_TX) {
           totalOutputCount += allocationOutputs.length
           const assetMap = new Map([
             [assetGuid, { outputs: allocationOutputs }]
@@ -197,7 +197,6 @@ async function issueAssets () {
           }
 
           allocationOutputs = []
-          await sleep(1500)
         }
       } else {
         totalOutputCount++
