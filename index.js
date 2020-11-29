@@ -72,11 +72,7 @@ async function confirmAccount () {
 function sleep (ms) {
   return new Promise(resolve => setTimeout(resolve, ms))
 }
-async function confirmAsset (assetGuid) {
-  const asset = await sjs.utils.fetchBackendAsset(backendURL, assetGuid)
-  return (asset && asset.assetGuid === assetGuid)
-}
-async function confirmAssetTransferred (assetGuid, address) {
+async function confirmAsset (assetGuid, address) {
   const utxoObj = await sjs.utils.fetchBackendUTXOS(syscoinjs.blockbookURL, address)
   if (utxoObj.assets) {
     utxoObj.assets.forEach(asset => {
@@ -105,7 +101,7 @@ async function createAssets () {
   let count = 0
   for (let i = 0; i < assets.length; i++) {
     const asset = assets[i]
-    const assetExists = await confirmAsset(asset.asset_guid)
+    const assetExists = await confirmAsset(asset.asset_guid, HDSigner.getAccountXpub())
     if (!assetExists) {
       count++
       const txOpts = { rbf: false, assetGuid: asset.asset_guid }
@@ -216,7 +212,7 @@ async function transferAssets () {
   let count = 0
   for (let i = 0; i < assets.length; i++) {
     const asset = assets[i]
-    const assetTransferred = await confirmAssetTransferred(asset.asset_guid, asset.address)
+    const assetTransferred = await confirmAsset(asset.asset_guid, asset.address)
     if (!assetTransferred) {
       count++
       res = await transferAsset(asset.asset_guid, asset.address)
