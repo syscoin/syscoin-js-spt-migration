@@ -319,7 +319,7 @@ async function sendSys () {
   const txOpts = { rbf: false }
   // let HDSigner find change address
   const sysChangeAddress = null
-  const outputsArr = []
+  let outputsArr = []
   // send 1 coin to NUMOUTPUTS_TX outputs so we can respend NUMOUTPUTS_TX times in a block for asset transactions (new,update,issue assets)
   for (let i = 0; i < NUMOUTPUTS_TX; i++) {
     outputsArr.push_back({ address: HDSigner.getNewReceivingAddress(), value: new sjs.utils.BN(100000000) })
