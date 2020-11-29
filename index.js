@@ -114,8 +114,12 @@ async function createAssets () {
     if (!assetExists) {
       count++
       const txOpts = { rbf: false, assetGuid: asset.asset_guid }
-      const currentPubDataJson = JSON.parse(asset.public_value)
-      const pubdata = (currentPubDataJson && currentPubDataJson.description) || asset.public_value
+      let pubdata
+      try{
+        pubdata = JSON.parse(asset.public_value).description
+      } catch(e) {
+        pubdata = asset.public_value
+      }
       // int64 limits
       // largest decimal amount that we can use, without compression overflow of uint (~1 quintillion satoshis)
       // 10^18 - 1 (999999999999999999)
