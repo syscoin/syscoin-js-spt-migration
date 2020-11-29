@@ -1,6 +1,6 @@
 const sjs = require('syscoinjs-lib')
 const sjstx = require('syscointx-js')
-const mnemonic = 'dizzy correct machine junior amateur left evil chase crush position smooth deposit today eternal voyage'
+const mnemonic = 'alpha tongue egg stuff ostrich body rifle refuse whale bird what biology exile pilot awkward'
 // blockbook URL
 const backendURL = 'http://localhost:19035' // if using localhost you don't need SSL see use 'systemctl edit --full blockbook-syscoin.service' to remove SSL from blockbook
 // 'null' for no password encryption for local storage and 'true' for testnet
