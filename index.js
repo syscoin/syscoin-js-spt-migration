@@ -140,7 +140,7 @@ async function createAssets () {
         }
         res = null
       }
-      await sleep(500)
+      await sleep(1500)
     }
   }
   if ((count % NUMOUTPUTS_TX) !== 0 && res) {
@@ -193,7 +193,7 @@ async function issueAssets () {
             }
           }
           allocationOutputs = []
-          await sleep(500)
+          await sleep(1500)
         }
       }
     }
@@ -242,7 +242,7 @@ async function transferAssets () {
         }
       }
       res = null
-      await sleep(500)
+      await sleep(1500)
     }
   }
   if ((count % NUMOUTPUTS_TX) !== 0 && res) {
