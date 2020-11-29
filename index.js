@@ -113,11 +113,10 @@ async function createAssets () {
       // largest decimal amount that we can use, without compression overflow of uint (~1 quintillion satoshis)
       // 10^18 - 1 (999999999999999999)
       // use limit if supply was negative meaning max supply
-      let maxSupplyBN
-      if (asset.max_supply < 0) {
+      let maxSupplyBN = new sjs.utils.BN(asset.max_supply)
+      if (maxSupplyBN.isNeg()) {
         maxSupplyBN = maxAsset
       } else {
-        maxSupplyBN = new sjs.utils.BN(asset.max_supply)
         // scale asset amount by precision to get total satoshis
         const precisionScalar = new sjs.utils.BN(10).pow(new sjs.utils.BN(asset.precision))
         maxSupplyBN = maxSupplyBN.mul(precisionScalar)
