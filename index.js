@@ -118,7 +118,8 @@ async function createAssets () {
       const maxsupplyBN = new sjs.utils.BN(asset.max_supply)
       // scale asset amount by precision to get total satoshis
       const precisionScalar = new sjs.utils.BN(10).pow(new sjs.utils.BN(asset.precision))
-      const maxsupply = (asset.max_supply < 0 || maxsupplyBN.gt(maxAsset))? maxAsset : maxsupplyBN.mul(precisionScalar)
+      maxsupplyBN = maxsupplyBN.mul(precisionScalar)
+      const maxsupply = (asset.max_supply < 0 || maxsupplyBN.gt(maxAsset))? maxAsset : maxsupplyBN
       const assetOpts = { precision: asset.precision, symbol: asset.symbol, maxsupply: maxsupply, description: pubdata.slice(0, 128) }
       res = await newAsset(assetOpts, txOpts)
       if (!res) {
