@@ -8,6 +8,7 @@ const HDSigner = new sjs.utils.HDSigner(mnemonic, null, true)
 const syscoinjs = new sjs.SyscoinJSLib(HDSigner, backendURL)
 const whitelist = []
 const NUMOUTPUTS_TX = 255
+const assetCostWithFee = new sjs.utils.BN(151).mul(new sjs.utils.BN(sjstx.utils.COIN))
 function readAssets () {
   console.log('Reading assets.json file...')
   const assets = require('./assets.json')
@@ -316,9 +317,22 @@ async function issueAsset (assetMap) {
 
 async function sendSys () {
   const utxoObj = await sjs.utils.fetchBackendUTXOS(syscoinjs.blockbookURL, HDSigner.getAccountXpub(), 'confirmed=true')
+  const utxoBNVal = new sjs.utils.BN(utxoObj.utxos[i].value)
   if(utxoObj.utxos.length >= NUMOUTPUTS_TX) {
-    console.log('There are already ' + utxoObj.utxos.length + ' utxos in this account, proceeding with creating assets!')
-    return true
+    let count = 0
+    for(let i =0;i<utxoObj.utxos.length;i++) {
+      const utxoBNVal = new sjs.utils.BN(utxoObj.utxos[i].value)
+      if(utxoBNVal.gte(assetCostWithFee)) {
+        count++
+        if(count > NUMOUTPUTS_TX) {
+          break
+        }
+      }
+    }
+    if(count > NUMOUTPUTS_TX) {
+      console.log('There are already ' + count + ' UTXOs to fund new assets in this account, proceeding with creating assets!')
+      return true
+    }
   }
   console.log('Allocating SYS to ' + NUMOUTPUTS_TX + ' outputs (1 SYS each)...')
   const feeRate = new sjs.utils.BN(10)
@@ -326,9 +340,9 @@ async function sendSys () {
   // let HDSigner find change address
   const sysChangeAddress = null
   let outputsArr = []
-  // send 1 coin to NUMOUTPUTS_TX outputs so we can respend NUMOUTPUTS_TX times in a block for asset transactions (new,update,issue assets)
+  // send assetCostWithFee amount to NUMOUTPUTS_TX outputs so we can respend NUMOUTPUTS_TX times in a block for asset transactions (new,update,issue assets)
   for (let i = 0; i < NUMOUTPUTS_TX; i++) {
-    outputsArr.push({ address: await HDSigner.getNewReceivingAddress(), value: new sjs.utils.BN(100000000) })
+    outputsArr.push({ address: await HDSigner.getNewReceivingAddress(), value: assetCostWithFee })
   }
   const psbt = await syscoinjs.createTransaction(txOpts, sysChangeAddress, outputsArr, feeRate)
   if (!psbt) {
