@@ -173,7 +173,7 @@ async function issueAssets () {
       const value = values.pop()
       const assetAllocationExists = await confirmAssetAllocation(value.address, assetGuid, value.balance)
       if (!assetAllocationExists) {
-        allocationOutputs.push({ value: value.balance, address: value.address })
+        allocationOutputs.push({ value: sjs.utils.BN(value.balance), address: value.address })
         // group outputs of an asset into up to NUMOUTPUTS_TX outputs per transaction
         if (allocationOutputs.length >= NUMOUTPUTS_TX) {
           currentOutputCount += allocationOutputs.length
