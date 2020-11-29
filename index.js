@@ -1,13 +1,13 @@
 const sjs = require('syscoinjs-lib')
 const sjstx = require('syscointx-js')
-const mnemonic = 'alpha tongue egg stuff ostrich body rifle refuse whale bird what biology exile pilot awkward'
+const mnemonic = 'club lamp owner convince man master true kind case matter road square proof prepare luxury'
 // blockbook URL
 const backendURL = 'http://localhost:19035' // if using localhost you don't need SSL see use 'systemctl edit --full blockbook-syscoin.service' to remove SSL from blockbook
 // 'null' for no password encryption for local storage and 'true' for testnet
 const HDSigner = new sjs.utils.HDSigner(mnemonic, null, true)
 const syscoinjs = new sjs.SyscoinJSLib(HDSigner, backendURL)
 const whitelist = []
-const NUMOUTPUTS_TX = 255
+const NUMOUTPUTS_TX = 5
 const assetCostWithFee = new sjs.utils.BN(151).mul(new sjs.utils.BN(sjstx.utils.COIN))
 const maxAsset = new sjs.utils.BN('999999999999999999')
 function readAssets () {
@@ -147,6 +147,8 @@ async function createAssets () {
           return
         }
         res = null
+        // setup next round of NUMOUTPUTS_TX outputs for asset funding
+        await sendSys()
       }
       await sleep(1500)
     }
