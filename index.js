@@ -109,15 +109,15 @@ async function createAssets () {
   let count = 0
   for (let i = 0; i < assets.length; i++) {
     const asset = assets[i]
-    asset.asset_guid = asset.asset_guid/2 // HACK for now
+    asset.asset_guid = asset.asset_guid / 2 // HACK for now
     const assetExists = await confirmAsset(asset.asset_guid, HDSigner.getAccountXpub())
     if (!assetExists) {
       count++
       const txOpts = { rbf: false, assetGuid: asset.asset_guid }
       let pubdata
-      try{
+      try {
         pubdata = JSON.parse(asset.public_value).description
-      } catch(e) {
+      } catch (e) {
         pubdata = asset.public_value
       }
       // int64 limits
