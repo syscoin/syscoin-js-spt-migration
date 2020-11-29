@@ -37,6 +37,7 @@ function readAssetAllocations () {
     if (allocation.address === 'burn') {
       continue
     }
+    allocation.balance = String(allocation.balance).replace('.', '')
     if (assetallocationsMap.has(allocation.asset_guid)) {
       const allocations = assetallocationsMap.get(allocation.asset_guid)
       allocations.push(allocation)
