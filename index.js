@@ -28,7 +28,7 @@ function readAssets () {
 }
 function readAssetAllocations () {
   console.log('Reading assetallocations.json file...')
-  const assetallocations = require('./assetallocations.json')
+  const assetallocations = require('./allocations.json')
   const assetallocationsMap = new Map()
   let totalCount = 0
   // group allocations via guid as keys in a map
