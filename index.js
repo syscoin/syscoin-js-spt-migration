@@ -319,11 +319,15 @@ async function issueAsset (assetMap) {
 }
 
 async function sendSys () {
-  const utxoObj = await sjs.utils.fetchBackendUTXOS(syscoinjs.blockbookURL, HDSigner.getAccountXpub(), 'confirmed=true')
+  const utxoObj = await sjs.utils.fetchBackendUTXOS(syscoinjs.blockbookURL, HDSigner.getAccountXpub())
+  let count = 0
   if (utxoObj.utxos.length >= NUMOUTPUTS_TX) {
-    let count = 0
     for (let i = 0; i < utxoObj.utxos.length; i++) {
-      const utxoBNVal = new sjs.utils.BN(utxoObj.utxos[i].value)
+      const utxo = utxoObj.utxos[i]
+      if (utxo.confirmations <= 0) {
+        continue
+      }
+      const utxoBNVal = new sjs.utils.BN(utxo.value)
       if (utxoBNVal.gte(assetCostWithFee)) {
         count++
         if (count > NUMOUTPUTS_TX) {
@@ -336,14 +340,14 @@ async function sendSys () {
       return true
     }
   }
-  console.log('Allocating SYS to ' + NUMOUTPUTS_TX + ' outputs...')
+  console.log('Allocating SYS to ' + (NUMOUTPUTS_TX - count) + ' outputs...')
   const feeRate = new sjs.utils.BN(10)
   const txOpts = { rbf: false }
   // let HDSigner find change address
   const sysChangeAddress = null
   const outputsArr = []
   // send assetCostWithFee amount to NUMOUTPUTS_TX outputs so we can respend NUMOUTPUTS_TX times in a block for asset transactions (new,update,issue assets)
-  for (let i = 0; i < NUMOUTPUTS_TX; i++) {
+  for (let i = 0; i < (NUMOUTPUTS_TX - count); i++) {
     outputsArr.push({ address: await HDSigner.getNewReceivingAddress(), value: assetCostWithFee })
   }
   const psbt = await syscoinjs.createTransaction(txOpts, sysChangeAddress, outputsArr, feeRate)
