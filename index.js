@@ -82,8 +82,8 @@ async function confirmAsset (assetGuid, address) {
   const utxoObj = await sjs.utils.fetchBackendUTXOS(syscoinjs.blockbookURL, address)
   if (utxoObj.assets) {
     for (let i = 0; i < utxoObj.assets.length; i++) {
-      const asset = utxoObj.assets[i]
-      if (asset.assetGuid === assetGuid) {
+      const assetObj = utxoObj.assets[i]
+      if (assetObj.assetGuid === assetGuid) {
         return true
       }
     }
