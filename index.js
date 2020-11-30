@@ -7,7 +7,7 @@ const backendURL = 'http://localhost:19035' // if using localhost you don't need
 const HDSigner = new sjs.utils.HDSigner(mnemonic, null, true)
 const syscoinjs = new sjs.SyscoinJSLib(HDSigner, backendURL)
 const whitelist = []
-const NUMOUTPUTS_TX = 5
+const NUMOUTPUTS_TX = 255
 const assetCostWithFee = new sjs.utils.BN(151).mul(new sjs.utils.BN(sjstx.utils.COIN))
 const maxAsset = new sjs.utils.BN('999999999999999999')
 function readAssets () {
