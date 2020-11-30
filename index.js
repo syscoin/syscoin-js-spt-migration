@@ -96,7 +96,7 @@ async function confirmAsset (assetGuid, address) {
   return false
 }
 async function confirmTx (txid) {
-  for (let i = 0; i < 100; i++) {
+  for (let i = 0; i < 300; i++) {
     await sleep(1000)
     const tx = await sjs.utils.fetchBackendRawTx(backendURL, txid)
     if (tx.confirmations && tx.confirmations > 0) {
