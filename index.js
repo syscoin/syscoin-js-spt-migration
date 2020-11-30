@@ -145,7 +145,10 @@ async function createAssets () {
         }
         res = null
         // setup next round of NUMOUTPUTS_TX outputs for asset funding
-        await sendSys()
+        const sendRes = await sendSys()
+        if(!sendRes) {
+          return
+        }
       }
       await sleep(1500)
     }
@@ -393,10 +396,12 @@ async function sendSys () {
   const resSend = await sjs.utils.sendRawTransaction(syscoinjs.blockbookURL, psbt.extractTransaction().toHex(), HDSigner)
   if (resSend.error) {
     console.log('could not send tx! error: ' + resSend.error.message)
+    return false
   } else if (resSend.result) {
     console.log('tx successfully sent! txid: ' + resSend.result)
   } else {
     console.log('Unrecognized response from backend: ' + resSend)
+    return false
   }
   console.log('Waiting for confirmation for: ' + resSend.result)
   const confirmed = await confirmTx(resSend.result)
