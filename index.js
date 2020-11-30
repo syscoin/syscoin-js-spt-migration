@@ -1,6 +1,6 @@
 const sjs = require('syscoinjs-lib')
 const sjstx = require('syscointx-js')
-const mnemonic = 'club lamp owner convince man master true kind case matter road square proof prepare luxury'
+const mnemonic = 'click peace basic main rough judge spice dentist reason rookie lunar village rib venue figure'
 // blockbook URL
 const backendURL = 'http://localhost:19035' // if using localhost you don't need SSL see use 'systemctl edit --full blockbook-syscoin.service' to remove SSL from blockbook
 // 'null' for no password encryption for local storage and 'true' for testnet
@@ -113,7 +113,7 @@ async function createAssets () {
   let count = 0
   for (let i = 0; i < assets.length; i++) {
     const asset = assets[i]
-    asset.asset_guid = Math.floor(asset.asset_guid / 4) // HACK for now
+    asset.asset_guid = Math.floor(asset.asset_guid / 5) // HACK for now
     const assetExists = await confirmAsset(asset.asset_guid)
     if (!assetExists) {
       count++
@@ -173,7 +173,7 @@ async function createAssets () {
 async function issueAssetAllocation (key, values, assetCount) {
   // sleep to allow for one transaction to process at one time in the Promise.All call
   await sleep(assetCount * 1500)
-  const assetGuid = Math.floor(key / 4) // HACK for now
+  const assetGuid = Math.floor(key / 5) // HACK for now
   console.log('Sending ' + values.length + ' allocations for asset ' + assetGuid)
   const valueLenCopy = values.length
   let allocationOutputs = []
@@ -255,7 +255,7 @@ async function transferAssets () {
   let count = 0
   for (let i = 0; i < assets.length; i++) {
     const asset = assets[i]
-    asset.asset_guid = Math.floor(asset.asset_guid / 4) // HACK for now
+    asset.asset_guid = Math.floor(asset.asset_guid / 5) // HACK for now
     const assetTransferred = await confirmAsset(asset.asset_guid, asset.address)
     if (!assetTransferred) {
       count++
