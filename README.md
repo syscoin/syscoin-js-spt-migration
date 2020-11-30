@@ -43,7 +43,8 @@ Confirming last tx: b0efd968c85972463b87a9ca9694c09aa044274f47616adaab59d9e923c6
 Sending 1 allocations for asset 165916674
 optimizeFees: reducing fees by: 1000
 tx successfully sent! txid: de70982b59ac6ddb6e4adb538492cbb46c55491af690f5523dcb6b19ab34f6d8
-Confirming last tx: de70982b59ac6ddb6e4adb538492cbb46c55491af690f5523dcb6b19ab34f6d8. Asset 165916674 ....
+...
+Confirming last tx: de70982b59ac6ddb6e4adb538492cbb46c55491af690f5523dcb6b19ab34f6d8. Asset 165916674
 Done, issued allocations for 16 assets!
 ```
 
