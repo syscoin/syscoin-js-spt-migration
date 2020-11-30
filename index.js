@@ -197,11 +197,9 @@ async function issueAssets () {
             console.log('Could not issue asset, transaction not confirmed, exiting...')
             return
           }
-
+          await sleep(1500)
           allocationOutputs = []
         }
-      } else {
-        totalOutputCount++
       }
     }
     if (allocationOutputs.length > 0) {
@@ -391,7 +389,7 @@ async function sendSys () {
     console.log('Could not send SYS, transaction not confirmed, exiting...')
     return false
   }
-  console.log('Confirmed, we are now ready to create up to ' + NUMOUTPUTS_TX + ' assets per block!')
+  console.log('Confirmed, we are now ready up to ' + NUMOUTPUTS_TX + ' assets!')
   return true
 }
 
