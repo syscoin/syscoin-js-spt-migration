@@ -75,12 +75,14 @@ function sleep (ms) {
   return new Promise(resolve => setTimeout(resolve, ms))
 }
 async function confirmAsset (assetGuid, address) {
-  // either asset has confirmed or its in mempool as seen by utxo query
-  const asset = await sjs.utils.fetchBackendAsset(syscoinjs.blockbookURL, assetGuid)
-  if (asset && asset.assetGuid === assetGuid) {
-    return true
+  if (!address) {
+    // either asset has confirmed or its in mempool as seen by utxo query
+    const asset = await sjs.utils.fetchBackendAsset(syscoinjs.blockbookURL, assetGuid)
+    if (asset && asset.assetGuid === assetGuid) {
+      return true
+    }
   }
-  const utxoObj = await sjs.utils.fetchBackendUTXOS(syscoinjs.blockbookURL, address)
+  const utxoObj = await sjs.utils.fetchBackendUTXOS(syscoinjs.blockbookURL, address || HDSigner.getAccountXpub())
   if (utxoObj.assets) {
     for (let i = 0; i < utxoObj.assets.length; i++) {
       const assetObj = utxoObj.assets[i]
@@ -111,7 +113,7 @@ async function createAssets () {
   for (let i = 0; i < assets.length; i++) {
     const asset = assets[i]
     asset.asset_guid = Math.floor(asset.asset_guid / 4) // HACK for now
-    const assetExists = await confirmAsset(asset.asset_guid, HDSigner.getAccountXpub())
+    const assetExists = await confirmAsset(asset.asset_guid)
     if (!assetExists) {
       count++
       const txOpts = { rbf: false, assetGuid: asset.asset_guid }
