@@ -146,7 +146,7 @@ async function createAssets () {
         res = null
         // setup next round of NUMOUTPUTS_TX outputs for asset funding
         const sendRes = await sendSys()
-        if(!sendRes) {
+        if (!sendRes) {
           return
         }
       }
@@ -167,7 +167,9 @@ async function createAssets () {
     console.log('Done, nothing to do...')
   }
 }
-async function issueAssetAllocation (key, values) {
+async function issueAssetAllocation (key, values, assetCount) {
+  // sleep to allow for one transaction to process at one time in the Promise.All call
+  await sleep(assetCount * 1500)
   const assetGuid = Math.floor(key / 4) // HACK for now
   console.log('Sending ' + values.length + ' allocations for asset ' + assetGuid)
   let allocationOutputs = []
@@ -229,7 +231,7 @@ async function issueAssets () {
   const asyncAssets = 10
   for (const [key, values] of assetallocations.entries()) {
     assetCount++
-    promises.push(issueAssetAllocation(key, values))
+    promises.push(issueAssetAllocation(key, values, assetCount))
     if ((assetCount % asyncAssets) === 0) {
       await Promise.all(promises)
       promises = []
