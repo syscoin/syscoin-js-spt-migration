@@ -252,7 +252,7 @@ async function issueAssets () {
 async function transferAssets () {
   const assets = readAssets()
   console.log('Read ' + assets.length + ' assets...')
-  let res
+  let res = null
   let count = 0
   for (let i = 0; i < assets.length; i++) {
     const asset = assets[i]
@@ -273,7 +273,6 @@ async function transferAssets () {
           return
         }
       }
-      res = null
       await sleep(1500)
     }
   }
