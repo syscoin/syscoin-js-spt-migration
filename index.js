@@ -437,7 +437,6 @@ async function sendSys () {
 }
 
 async function main () {
-  console.log(await HDSigner.getNewReceivingAddress())
   console.log('Account XPUB: ' + HDSigner.getAccountXpub())
   const doesAccountExist = await confirmAccount()
   if (!doesAccountExist) {
