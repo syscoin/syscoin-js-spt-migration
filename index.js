@@ -86,7 +86,8 @@ async function confirmAsset (assetGuid, address) {
   if (utxoObj.assets) {
     for (let i = 0; i < utxoObj.assets.length; i++) {
       const assetObj = utxoObj.assets[i]
-      if (assetObj.assetGuid === assetGuid) {
+      // 0 denotes the ownership object UTXO
+      if (assetObj.assetGuid === assetGuid && assetObj.value === "0") {
         return true
       }
     }
@@ -317,7 +318,12 @@ async function transferAsset (assetGuid, address) {
   const feeRate = new sjs.utils.BN(10)
   const txOpts = { rbf: true }
   const assetOpts = { }
-  const psbt = await syscoinjs.assetUpdate(assetGuid, assetOpts, txOpts, address, feeRate)
+  const assetMap = new Map([
+    [assetGuid, { outputs: [{ value: new BN(0), address: address }] }]
+  ])
+  // let HDSigner find change address
+  const sysChangeAddress = null
+  const psbt = await syscoinjs.assetUpdate(assetGuid, assetOpts, txOpts, assetMap, sysChangeAddress, feeRate)
   if (!psbt) {
     console.log('Could not create transaction, not enough funds?')
     return null
