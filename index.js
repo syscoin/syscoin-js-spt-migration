@@ -252,7 +252,7 @@ async function transferAssets () {
   let count = 0
   for (let i = 0; i < assets.length; i++) {
     const asset = assets[i]
-    asset.asset_guid = Math.floor(asset.asset_guid / 2) // HACK for now
+    asset.asset_guid = Math.floor(asset.asset_guid / 4) // HACK for now
     const assetTransferred = await confirmAsset(asset.asset_guid, asset.address)
     if (!assetTransferred) {
       count++
