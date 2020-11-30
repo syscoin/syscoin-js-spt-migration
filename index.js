@@ -30,7 +30,6 @@ function readAssetAllocations () {
   console.log('Reading assetallocations.json file...')
   const assetallocations = require('./allocations.json')
   const assetallocationsMap = new Map()
-  let totalCount = 0
   // group allocations via guid as keys in a map
   for (let i = 0; i < assetallocations.length; i++) {
     const allocation = assetallocations[i]
@@ -45,15 +44,13 @@ function readAssetAllocations () {
       assetallocationsMap.set(allocation.asset_guid, [allocation])
     }
   }
-  for (const [key, value] of assetallocationsMap.entries()) {
+  for (const key of assetallocationsMap.keys()) {
     const assetAllocation = whitelist.find(voutAsset => voutAsset.asset_guid === key)
     if (whitelist.length > 0 && assetAllocation === undefined) {
       assetallocationsMap.delete(key)
-    } else {
-      totalCount += value.length
     }
   }
-  return { map: assetallocationsMap, count: totalCount }
+  return assetallocationsMap
 }
 async function confirmAssetAllocation (address, assetGuid, balance) {
   const utxoObj = await sjs.utils.fetchBackendUTXOS(syscoinjs.blockbookURL, address)
@@ -167,63 +164,79 @@ async function createAssets () {
     console.log('Done, nothing to do...')
   }
 }
+async function issueAssetAllocation (key, values) {
+  const assetGuid = Math.floor(key / 3) // HACK for now
+  console.log('Sending ' + values.length + ' allocations for asset ' + assetGuid)
+  let allocationOutputs = []
+  let totalOutputCount = 0
+  while (values.length > 0) {
+    const value = values.pop()
+    const balanceBN = new sjs.utils.BN(value.balance)
+    const assetAllocationExists = await confirmAssetAllocation(value.address, assetGuid, balanceBN)
+    if (!assetAllocationExists) {
+      allocationOutputs.push({ value: balanceBN, address: value.address })
+      // group outputs of an asset into up to NUMOUTPUTS_TX outputs per transaction
+      if (allocationOutputs.length >= NUMOUTPUTS_TX) {
+        totalOutputCount += allocationOutputs.length
+        const assetMap = new Map([
+          [assetGuid, { outputs: allocationOutputs }]
+        ])
+        const res = await issueAsset(assetMap)
+        if (!res) {
+          console.log('Could not issue asset tx for guid ' + key + ', retrying...')
+          continue
+        }
+        console.log('Confirming tx: ' + res.txid + '. Total asset allocations so far: ' + totalOutputCount + '. Remaining allocations: ' + values.length)
+        const confirmed = await confirmTx(res.txid)
+        if (!confirmed) {
+          console.log('Could not issue asset, transaction not confirmed, exiting...')
+          return
+        }
+        await sleep(1500)
+        allocationOutputs = []
+      }
+    } else {
+      totalOutputCount++
+    }
+  }
+  if (allocationOutputs.length > 0) {
+    totalOutputCount += allocationOutputs.length
+    const assetMap = new Map([
+      [assetGuid, { outputs: allocationOutputs }]
+    ])
+    const res = await issueAsset(assetMap)
+    if (!res) {
+      console.log('Could not issue last asset tx, exiting...')
+      return
+    }
+    console.log('Confirming last tx: ' + res.txid + '. Asset ' + key + ' Total asset allocations so far: ' + totalOutputCount + '. Remaining allocations: ' + values.length)
+    const confirmed = await confirmTx(res.txid)
+    if (!confirmed) {
+      console.log('Could not issue asset, transaction not confirmed, exiting...')
+      return
+    }
+  }
+  console.log('Done sending ' + values.length + ' allocations for asset ' + assetGuid)
+}
 async function issueAssets () {
   const assetallocations = readAssetAllocations()
   console.log('Issuing asset allocations...')
-  let totalOutputCount = 0
-  for (const [key, values] of assetallocations.map.entries()) {
-    const assetGuid = Math.floor(key / 3) // HACK for now
-    let allocationOutputs = []
-    while (values.length > 0) {
-      const value = values.pop()
-      const balanceBN = new sjs.utils.BN(value.balance)
-      const assetAllocationExists = await confirmAssetAllocation(value.address, assetGuid, balanceBN)
-      if (!assetAllocationExists) {
-        allocationOutputs.push({ value: balanceBN, address: value.address })
-        // group outputs of an asset into up to NUMOUTPUTS_TX outputs per transaction
-        if (allocationOutputs.length >= NUMOUTPUTS_TX) {
-          totalOutputCount += allocationOutputs.length
-          const assetMap = new Map([
-            [assetGuid, { outputs: allocationOutputs }]
-          ])
-          const res = await issueAsset(assetMap)
-          if (!res) {
-            console.log('Could not issue asset tx, exiting...')
-            return
-          }
-          console.log('Confirming tx: ' + res.txid + '. Total asset allocations so far: ' + totalOutputCount + '. Remaining allocations: ' + (assetallocations.count - totalOutputCount))
-          const confirmed = await confirmTx(res.txid)
-          if (!confirmed) {
-            console.log('Could not issue asset, transaction not confirmed, exiting...')
-            return
-          }
-          await sleep(1500)
-          allocationOutputs = []
-        }
-      } else {
-        totalOutputCount++
-      }
-    }
-    if (allocationOutputs.length > 0) {
-      totalOutputCount += allocationOutputs.length
-      const assetMap = new Map([
-        [assetGuid, { outputs: allocationOutputs }]
-      ])
-      const res = await issueAsset(assetMap)
-      if (!res) {
-        console.log('Could not issue last asset tx, exiting...')
-        return
-      }
-      console.log('Confirming last tx: ' + res.txid + '. Total asset allocations so far: ' + totalOutputCount + '. Remaining allocations: ' + (assetallocations.count - totalOutputCount))
-      const confirmed = await confirmTx(res.txid)
-      if (!confirmed) {
-        console.log('Could not issue asset, transaction not confirmed, exiting...')
-        return
-      }
+  let assetCount = 0
+  let promises = []
+  const asyncAssets = 10
+  for (const [key, values] of assetallocations.entries()) {
+    assetCount++
+    promises.push(issueAssetAllocation(key, values))
+    if ((assetCount % asyncAssets) === 0) {
+      await Promise.all(promises)
+      promises = []
     }
   }
-  if (totalOutputCount > 0) {
-    console.log('Done, issued ' + totalOutputCount + ' asset allocations!')
+  if (promises.length > 0) {
+    await Promise.all(promises)
+  }
+  if (assetCount > 0) {
+    console.log('Done, issued allocations for ' + assetCount + ' assets!')
   }
 }
 async function transferAssets () {
