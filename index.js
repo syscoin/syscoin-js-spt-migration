@@ -86,8 +86,7 @@ async function confirmAsset (assetGuid, address) {
   if (utxoObj.assets) {
     for (let i = 0; i < utxoObj.assets.length; i++) {
       const assetObj = utxoObj.assets[i]
-      // 0 denotes the ownership object UTXO
-      if (assetObj.assetGuid === assetGuid && assetObj.value === "0") {
+      if (assetObj.assetGuid === assetGuid) {
         return true
       }
     }
