@@ -83,10 +83,12 @@ async function confirmAsset (assetGuid, address) {
     }
   }
   const utxoObj = await sjs.utils.fetchBackendUTXOS(syscoinjs.blockbookURL, address || HDSigner.getAccountXpub())
-  if (utxoObj.assets) {
-    for (let i = 0; i < utxoObj.assets.length; i++) {
-      const assetObj = utxoObj.assets[i]
-      if (assetObj.assetGuid === assetGuid) {
+  // look through utxos (not utxoObj.assets) as they are asset aware and mempool aware, utxoObj.assets is not mempool aware
+  if (utxoObj.utxos) {
+    for (let i = 0; i < utxoObj.utxos.length; i++) {
+      const utxo = utxoObj.utxos[i]
+      // check for 0 value ownership UTXO in the account queried
+      if (utxo.assetInfo && utxo.assetInfo.assetGuid === assetGuid && utxo.assetInfo.value === '0') {
         return true
       }
     }
