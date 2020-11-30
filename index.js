@@ -172,6 +172,7 @@ async function issueAssetAllocation (key, values, assetCount) {
   await sleep(assetCount * 1500)
   const assetGuid = Math.floor(key / 4) // HACK for now
   console.log('Sending ' + values.length + ' allocations for asset ' + assetGuid)
+  const valueLenCopy = values.length
   let allocationOutputs = []
   let totalOutputCount = 0
   while (values.length > 0) {
@@ -221,7 +222,7 @@ async function issueAssetAllocation (key, values, assetCount) {
       return
     }
   }
-  console.log('Done sending ' + values.length + ' allocations for asset ' + assetGuid)
+  console.log('Done sending ' + valueLenCopy + ' allocations for asset ' + assetGuid)
 }
 async function issueAssets () {
   const assetallocations = readAssetAllocations()
