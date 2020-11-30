@@ -186,7 +186,7 @@ async function issueAssetAllocation (key, values) {
         ])
         const res = await issueAsset(assetMap)
         if (!res) {
-          console.log('Could not issue asset tx for guid ' + key + ', retrying...')
+          console.log('Could not issue asset tx for guid ' + assetGuid + ', retrying...')
           continue
         }
         console.log('Confirming tx: ' + res.txid + '. Total asset allocations so far: ' + totalOutputCount + '. Remaining allocations: ' + values.length)
@@ -212,7 +212,7 @@ async function issueAssetAllocation (key, values) {
       console.log('Could not issue last asset tx, exiting...')
       return
     }
-    console.log('Confirming last tx: ' + res.txid + '. Asset ' + key + ' Total asset allocations so far: ' + totalOutputCount + '. Remaining allocations: ' + values.length)
+    console.log('Confirming last tx: ' + res.txid + '. Asset ' + assetGuid + ' Total asset allocations so far: ' + totalOutputCount + '. Remaining allocations: ' + values.length)
     const confirmed = await confirmTx(res.txid)
     if (!confirmed) {
       console.log('Could not issue asset, transaction not confirmed, exiting...')
