@@ -8,7 +8,8 @@ const HDSigner = new sjs.utils.HDSigner(mnemonic, null, true)
 const syscoinjs = new sjs.SyscoinJSLib(HDSigner, backendURL)
 const whitelist = []
 const NUMOUTPUTS_TX = 255
-const assetCostWithFee = new sjs.utils.BN(151).mul(new sjs.utils.BN(sjstx.utils.COIN))
+const COST_ASSET_SYS = 150
+const assetCostWithFee = new sjs.utils.BN(COST_ASSET_SYS + 1).mul(new sjs.utils.BN(sjstx.utils.COIN))
 const maxAsset = new sjs.utils.BN('999999999999999999')
 function readAssets () {
   console.log('Reading assets.json file...')
@@ -115,7 +116,6 @@ async function createAssets () {
   let alreadyExisting = 0
   for (let i = 0; i < assets.length; i++) {
     const asset = assets[i]
-    asset.asset_guid = Math.floor(asset.asset_guid / 6) // HACK for now
     const assetExists = await confirmAsset(asset.asset_guid)
     if (!assetExists) {
       count++
@@ -142,7 +142,7 @@ async function createAssets () {
         return
       }
       if ((count % NUMOUTPUTS_TX) === 0) {
-        console.log('Confirming tx: ' + res.txid + '. Total assets so far: ' + count + '. Remaining assets: ' + (assets.length - count))
+        console.log('Confirming tx: ' + res.txid + '. Total assets so far: ' + count)
         const confirmed = await confirmTx(res.txid)
         if (!confirmed) {
           console.log('Could not create assets, transaction not confirmed, exiting...')
@@ -155,13 +155,13 @@ async function createAssets () {
           return
         }
       }
-      await sleep(1500)
+      await sleep(2000)
     } else {
       alreadyExisting++
     }
   }
   if ((count % NUMOUTPUTS_TX) !== 0 && res) {
-    console.log('Confirming last tx: ' + res.txid + '. Total assets so far: ' + count + '. Remaining assets: ' + (assets.length - count))
+    console.log('Confirming last tx: ' + res.txid + '. Total assets so far: ' + count)
     const confirmed = await confirmTx(res.txid)
     if (!confirmed) {
       console.log('Could not create assets, transaction not confirmed, exiting...')
@@ -179,8 +179,7 @@ async function createAssets () {
 }
 async function issueAssetAllocation (key, values, assetCount) {
   // sleep to allow for one transaction to process at one time in the Promise.All call
-  await sleep(assetCount * 1500)
-  const assetGuid = Math.floor(key / 6) // HACK for now
+  await sleep(assetCount * 2000)
   console.log('Sending ' + values.length + ' allocations for asset ' + assetGuid)
   const valueLenCopy = values.length
   let allocationOutputs = []
@@ -208,7 +207,7 @@ async function issueAssetAllocation (key, values, assetCount) {
           console.log('Could not issue asset, transaction not confirmed, exiting...')
           return
         }
-        await sleep(1500)
+        await sleep(2000)
         allocationOutputs = []
       }
     } else {
@@ -263,7 +262,6 @@ async function transferAssets () {
   let alreadyTransferred = 0
   for (let i = 0; i < assets.length; i++) {
     const asset = assets[i]
-    asset.asset_guid = Math.floor(asset.asset_guid / 6) // HACK for now
     const assetTransferred = await confirmAsset(asset.asset_guid, asset.address)
     if (!assetTransferred) {
       count++
@@ -273,20 +271,20 @@ async function transferAssets () {
         return
       }
       if ((count % NUMOUTPUTS_TX) === 0) {
-        console.log('Confirming tx: ' + res.txid + '. Total assets so far: ' + count + '. Remaining assets: ' + (assets.length - count))
+        console.log('Confirming tx: ' + res.txid + '. Total assets so far: ' + count)
         const confirmed = await confirmTx(res.txid)
         if (!confirmed) {
           console.log('Could not transfer asset, transaction not confirmed, exiting...')
           return
         }
       }
-      await sleep(1500)
+      await sleep(2000)
     } else {
       alreadyTransferred++
     }
   }
   if ((count % NUMOUTPUTS_TX) !== 0 && res) {
-    console.log('Confirming last tx: ' + res.txid + '. Total assets so far: ' + count + '. Remaining assets: ' + (assets.length - count))
+    console.log('Confirming last tx: ' + res.txid + '. Total assets so far: ' + count)
     const confirmed = await confirmTx(res.txid)
     if (!confirmed) {
       console.log('Could not transfer asset, transaction not confirmed, exiting...')
@@ -449,7 +447,7 @@ async function main () {
   }
   if (process.argv[2] === 'createassets') {
     const sendSysRes = await sendSys()
-    await sleep(1500)
+    await sleep(2000)
     if (sendSysRes) {
       await createAssets()
     }
