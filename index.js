@@ -200,6 +200,8 @@ async function issueAssets () {
           await sleep(1500)
           allocationOutputs = []
         }
+      } else {
+        totalOutputCount++
       }
     }
     if (allocationOutputs.length > 0) {
