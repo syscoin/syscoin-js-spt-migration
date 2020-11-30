@@ -110,7 +110,7 @@ async function createAssets () {
   let count = 0
   for (let i = 0; i < assets.length; i++) {
     const asset = assets[i]
-    asset.asset_guid = Math.floor(asset.asset_guid / 3) // HACK for now
+    asset.asset_guid = Math.floor(asset.asset_guid / 4) // HACK for now
     const assetExists = await confirmAsset(asset.asset_guid, HDSigner.getAccountXpub())
     if (!assetExists) {
       count++
@@ -165,7 +165,7 @@ async function createAssets () {
   }
 }
 async function issueAssetAllocation (key, values) {
-  const assetGuid = Math.floor(key / 3) // HACK for now
+  const assetGuid = Math.floor(key / 4) // HACK for now
   console.log('Sending ' + values.length + ' allocations for asset ' + assetGuid)
   let allocationOutputs = []
   let totalOutputCount = 0
