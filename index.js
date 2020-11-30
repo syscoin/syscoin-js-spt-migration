@@ -319,7 +319,7 @@ async function transferAsset (assetGuid, address) {
   const txOpts = { rbf: true }
   const assetOpts = { }
   const assetMap = new Map([
-    [assetGuid, { outputs: [{ value: new BN(0), address: address }] }]
+    [assetGuid, { outputs: [{ value: new sjs.utils.BN(0), address: address }] }]
   ])
   // let HDSigner find change address
   const sysChangeAddress = null
