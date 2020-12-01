@@ -54,11 +54,8 @@ Transfer Assets:
 Account XPUB: vpub5YFruvJNbcL3XbL9nYaFBs6yKxLjHySCMNLYTT5sCdua78L96jGZYjShjLtrc6QmsUq2Hpk6XY29UYCSMbRaFAXfabNCxnRgwsnCTEEN8Mk
 Reading assets.json file...
 Read 40 assets...
-asset 351780722
 tx successfully sent! txid: b4076f029028a6df9f1de4b545cf20251ab5e41bbdcb23ceb41855eb74ed4ad4
-asset 147438111
 tx successfully sent! txid: 078ba1f16a44a86d794465e76e8bb12ad70706115583ae062d198ff4b593a793
-asset 288973727
 ...
 Confirming last tx: a46e770aa12500dd35d75c3e56ae06aab1a91542ed50eeafef1da7a9047e8a23. Total assets so far: 40.
 Done, transferred 40 assets!
