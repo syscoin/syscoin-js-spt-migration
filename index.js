@@ -1,6 +1,6 @@
 const sjs = require('syscoinjs-lib')
 const sjstx = require('syscointx-js')
-const mnemonic = 'caution fox acoustic autumn onion rocket blade worry lion marble mother material blast ski next'
+const mnemonic = 'grocery field execute brain antenna put dice improve abstract abstract trouble upper six discover degree'
 const OLD_ASSET_UPDATE_ADMIN = 1 // god mode
 const OLD_ASSET_UPDATE_DATA = 2 // can you update public data field?
 const OLD_ASSET_UPDATE_CONTRACT = 4 // can you update smart contract?
