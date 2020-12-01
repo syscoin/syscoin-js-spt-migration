@@ -4,7 +4,7 @@ Migrating assets to Syscoin 4.2 requires a snapshot of existing assets on Syscoi
 
 1) Send SYS to atleast number of assets outputs to provision enough outputs to create assets without waiting for block.
 2) Create assets one at a time
-3) Issue assets (allocations) to addresses and amounts found in listassetallocations output from 4.1.3
+3) Issue assets (allocations) to addresses and amounts found in listassetallocations output from 4.1.3. This is done in parallel across assets, and one transaction per up to 255 outputs is sent to the network.
 4) Transfer the asset ownership by sending the 0 value UTXO (ownership UTXO asset) to original owner as found in listassets output from 4.1.3
 
 Steps 1/2 done by calling index.js with "createassets", step 3 done by calling index.js with "issueassets" and step4 done by calling index.js with "transferassets". Meant to be run via nodejs but can connect to any blockbook running on Syscoin 4.2
@@ -54,11 +54,8 @@ Transfer Assets:
 Account XPUB: vpub5YFruvJNbcL3XbL9nYaFBs6yKxLjHySCMNLYTT5sCdua78L96jGZYjShjLtrc6QmsUq2Hpk6XY29UYCSMbRaFAXfabNCxnRgwsnCTEEN8Mk
 Reading assets.json file...
 Read 40 assets...
-asset 351780722
 tx successfully sent! txid: b4076f029028a6df9f1de4b545cf20251ab5e41bbdcb23ceb41855eb74ed4ad4
-asset 147438111
 tx successfully sent! txid: 078ba1f16a44a86d794465e76e8bb12ad70706115583ae062d198ff4b593a793
-asset 288973727
 ...
 Confirming last tx: a46e770aa12500dd35d75c3e56ae06aab1a91542ed50eeafef1da7a9047e8a23. Total assets so far: 40.
 Done, transferred 40 assets!
