@@ -3,7 +3,6 @@ const sjstx = require('syscointx-js')
 const mnemonic = 'caution fox acoustic autumn onion rocket blade worry lion marble mother material blast ski next'
 const OLD_ASSET_UPDATE_DATA = 2 // can you update public data field?
 const OLD_ASSET_UPDATE_CONTRACT = 4 // can you update smart contract?
-const OLD_ASSET_UPDATE_SUPPLY = 8 // can you update supply?
 const OLD_ASSET_UPDATE_FLAGS = 16 // can you update flags? if you would set permanently disable this one and admin flag as well
 const OLD_ASSET_UPDATE_ALL = 31
 // blockbook URL
@@ -17,15 +16,12 @@ const COST_ASSET_SYS = 150
 const assetCostWithFee = new sjs.utils.BN(COST_ASSET_SYS + 1).mul(new sjs.utils.BN(sjstx.utils.COIN))
 const maxAsset = new sjs.utils.BN('999999999999999999')
 function convertUpdateCapabilityFlags (oldUpdateFlags) {
-  let newUpdateCapabilitylags = 0
+  let newUpdateCapabilitylags = sjstx.utils.ASSET_INIT | sjstx.utils.ASSET_UPDATE_SUPPLY
   if (oldUpdateFlags & OLD_ASSET_UPDATE_DATA) {
     newUpdateCapabilitylags |= sjstx.utils.ASSET_UPDATE_DATA
   }
   if (oldUpdateFlags & OLD_ASSET_UPDATE_CONTRACT) {
     newUpdateCapabilitylags |= sjstx.utils.ASSET_UPDATE_CONTRACT
-  }
-  if (oldUpdateFlags & OLD_ASSET_UPDATE_SUPPLY) {
-    newUpdateCapabilitylags |= sjstx.utils.ASSET_UPDATE_SUPPLY
   }
   if (oldUpdateFlags & OLD_ASSET_UPDATE_FLAGS) {
     newUpdateCapabilitylags |= sjstx.utils.ASSET_UPDATE_CAPABILITYFLAGS
