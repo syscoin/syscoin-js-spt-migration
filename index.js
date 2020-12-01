@@ -297,6 +297,7 @@ async function transferAssets () {
         }
         console.log('Could not transfer asset, waiting 30 seconds to confirm as asset UTXO might be in mempool from previous transfer...')
         i--
+        count--
         await sleep(30000)
         continue
       }
