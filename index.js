@@ -137,7 +137,7 @@ async function createAssets () {
   let alreadyExisting = 0
   for (let i = 0; i < assets.length; i++) {
     const asset = assets[i]
-    asset.asset_guid = Math.floor(asset.asset_guid/7)
+    asset.asset_guid = Math.floor(asset.asset_guid / 7)
     const assetExists = await confirmAsset(asset.asset_guid)
     if (!assetExists) {
       count++
@@ -202,7 +202,7 @@ async function createAssets () {
 async function issueAssetAllocation (key, values, assetCount) {
   // sleep to allow for one transaction to process at one time in the Promise.All call
   await sleep(assetCount * 1500)
-  const assetGuid = Math.floor(key/7)
+  const assetGuid = Math.floor(key / 7)
   console.log('Sending ' + values.length + ' allocations for asset ' + assetGuid)
   const valueLenCopy = values.length
   let allocationOutputs = []
@@ -285,7 +285,7 @@ async function transferAssets () {
   let alreadyTransferred = 0
   for (let i = 0; i < assets.length; i++) {
     const asset = assets[i]
-    asset.asset_guid = Math.floor(asset.asset_guid/7)
+    asset.asset_guid = Math.floor(asset.asset_guid / 7)
     const assetTransferred = await confirmAsset(asset.asset_guid, asset.address)
     if (!assetTransferred) {
       count++
