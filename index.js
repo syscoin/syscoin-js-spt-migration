@@ -1,6 +1,6 @@
 const sjs = require('syscoinjs-lib')
 const sjstx = require('syscointx-js')
-const mnemonic = 'exercise you plate desk basic creek olive wealth scissors cigar key short hundred join side'
+const mnemonic = 'caution fox acoustic autumn onion rocket blade worry lion marble mother material blast ski next'
 const OLD_ASSET_UPDATE_DATA = 2 // can you update public data field?
 const OLD_ASSET_UPDATE_CONTRACT = 4 // can you update smart contract?
 const OLD_ASSET_UPDATE_SUPPLY = 8 // can you update supply?
@@ -140,6 +140,7 @@ async function createAssets () {
   let alreadyExisting = 0
   for (let i = 0; i < assets.length; i++) {
     const asset = assets[i]
+    asset.asset_guid = Math.floor(asset.asset_guid/7)
     const assetExists = await confirmAsset(asset.asset_guid)
     if (!assetExists) {
       count++
@@ -204,7 +205,7 @@ async function createAssets () {
 async function issueAssetAllocation (key, values, assetCount) {
   // sleep to allow for one transaction to process at one time in the Promise.All call
   await sleep(assetCount * 1500)
-  const assetGuid = key
+  const assetGuid = Math.floor(key/7)
   console.log('Sending ' + values.length + ' allocations for asset ' + assetGuid)
   const valueLenCopy = values.length
   let allocationOutputs = []
@@ -287,6 +288,7 @@ async function transferAssets () {
   let alreadyTransferred = 0
   for (let i = 0; i < assets.length; i++) {
     const asset = assets[i]
+    asset.asset_guid = Math.floor(asset.asset_guid/7)
     const assetTransferred = await confirmAsset(asset.asset_guid, asset.address)
     if (!assetTransferred) {
       count++
