@@ -14,7 +14,8 @@ Here is what it looks like running on testnet snapshot:
 
 Create Assets:
 
-```node index.js createassets
+```
+node index.js createassets
 Account XPUB: vpub5YFruvJNbcL3XbL9nYaFBs6yKxLjHySCMNLYTT5sCdua78L96jGZYjShjLtrc6QmsUq2Hpk6XY29UYCSMbRaFAXfabNCxnRgwsnCTEEN8Mk
 Allocating SYS to 255 outputs...
 tx successfully sent! txid: a56660d0402e270557ad2b6cf2654ddd5be55b0ae2dbe20ba3669c7d4e6e7969
@@ -32,7 +33,8 @@ Done, created 40 assets!
 
 Issue Assets:
 
-```node index.js issueassets
+```
+node index.js issueassets
 Account XPUB: vpub5YFruvJNbcL3XbL9nYaFBs6yKxLjHySCMNLYTT5sCdua78L96jGZYjShjLtrc6QmsUq2Hpk6XY29UYCSMbRaFAXfabNCxnRgwsnCTEEN8Mk
 Reading assetallocations.json file...
 Issuing asset allocations...
@@ -50,7 +52,8 @@ Done, issued allocations for 16 assets!
 
 Transfer Assets:
 
-```node index.js transferassets
+```
+node index.js transferassets
 Account XPUB: vpub5YFruvJNbcL3XbL9nYaFBs6yKxLjHySCMNLYTT5sCdua78L96jGZYjShjLtrc6QmsUq2Hpk6XY29UYCSMbRaFAXfabNCxnRgwsnCTEEN8Mk
 Reading assets.json file...
 Read 40 assets...
