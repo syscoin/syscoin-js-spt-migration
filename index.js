@@ -1,6 +1,7 @@
 const sjs = require('syscoinjs-lib')
 const sjstx = require('syscointx-js')
 const mnemonic = 'caution fox acoustic autumn onion rocket blade worry lion marble mother material blast ski next'
+const OLD_ASSET_UPDATE_ADMIN = 1 // god mode
 const OLD_ASSET_UPDATE_DATA = 2 // can you update public data field?
 const OLD_ASSET_UPDATE_CONTRACT = 4 // can you update smart contract?
 const OLD_ASSET_UPDATE_FLAGS = 16 // can you update flags? if you would set permanently disable this one and admin flag as well
@@ -26,7 +27,7 @@ function convertUpdateCapabilityFlags (oldUpdateFlags) {
   if (oldUpdateFlags & OLD_ASSET_UPDATE_FLAGS) {
     newUpdateCapabilitylags |= sjstx.utils.ASSET_UPDATE_CAPABILITYFLAGS
   }
-  if (oldUpdateFlags & OLD_ASSET_UPDATE_ALL) {
+  if ((oldUpdateFlags & OLD_ASSET_UPDATE_ALL) || (oldUpdateFlags & OLD_ASSET_UPDATE_ADMIN)) {
     newUpdateCapabilitylags = sjstx.utils.ASSET_CAPABILITY_ALL
   }
   return newUpdateCapabilitylags
