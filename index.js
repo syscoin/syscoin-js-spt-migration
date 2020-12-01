@@ -27,7 +27,7 @@ function convertUpdateCapabilityFlags (oldUpdateFlags) {
   if (oldUpdateFlags & OLD_ASSET_UPDATE_FLAGS) {
     newUpdateCapabilitylags |= sjstx.utils.ASSET_UPDATE_CAPABILITYFLAGS
   }
-  if ((oldUpdateFlags & OLD_ASSET_UPDATE_ALL) || (oldUpdateFlags & OLD_ASSET_UPDATE_ADMIN)) {
+  if ((oldUpdateFlags === OLD_ASSET_UPDATE_ALL) || (oldUpdateFlags & OLD_ASSET_UPDATE_ADMIN)) {
     newUpdateCapabilitylags = sjstx.utils.ASSET_CAPABILITY_ALL
   }
   return newUpdateCapabilitylags
