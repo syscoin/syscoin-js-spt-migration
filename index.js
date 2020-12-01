@@ -1,6 +1,11 @@
 const sjs = require('syscoinjs-lib')
 const sjstx = require('syscointx-js')
 const mnemonic = 'exercise you plate desk basic creek olive wealth scissors cigar key short hundred join side'
+const OLD_ASSET_UPDATE_DATA = 2 // can you update public data field?
+const OLD_ASSET_UPDATE_CONTRACT = 4 // can you update smart contract?
+const OLD_ASSET_UPDATE_SUPPLY = 8 // can you update supply?
+const OLD_ASSET_UPDATE_FLAGS = 16 // can you update flags? if you would set permanently disable this one and admin flag as well
+const OLD_ASSET_UPDATE_ALL = 31
 // blockbook URL
 const backendURL = 'http://localhost:19035' // if using localhost you don't need SSL see use 'systemctl edit --full blockbook-syscoin.service' to remove SSL from blockbook
 // 'null' for no password encryption for local storage and 'true' for testnet
@@ -11,6 +16,25 @@ const NUMOUTPUTS_TX = 255
 const COST_ASSET_SYS = 150
 const assetCostWithFee = new sjs.utils.BN(COST_ASSET_SYS + 1).mul(new sjs.utils.BN(sjstx.utils.COIN))
 const maxAsset = new sjs.utils.BN('999999999999999999')
+function convertUpdateCapabilityFlags (oldUpdateFlags) {
+  let newUpdateCapabilitylags = 0
+  if (oldUpdateFlags & OLD_ASSET_UPDATE_DATA) {
+    newUpdateCapabilitylags |= sjstx.utils.ASSET_UPDATE_DATA
+  }
+  if (oldUpdateFlags & OLD_ASSET_UPDATE_CONTRACT) {
+    newUpdateCapabilitylags |= sjstx.utils.ASSET_UPDATE_CONTRACT
+  }
+  if (oldUpdateFlags & OLD_ASSET_UPDATE_SUPPLY) {
+    newUpdateCapabilitylags |= sjstx.utils.ASSET_UPDATE_SUPPLY
+  }
+  if (oldUpdateFlags & OLD_ASSET_UPDATE_FLAGS) {
+    newUpdateCapabilitylags |= sjstx.utils.ASSET_UPDATE_CAPABILITYFLAGS
+  }
+  if (oldUpdateFlags & OLD_ASSET_UPDATE_ALL) {
+    newUpdateCapabilitylags = sjstx.utils.ASSET_CAPABILITY_ALL
+  }
+  return newUpdateCapabilitylags
+}
 function readAssets () {
   console.log('Reading assets.json file...')
   const assets = require('./assets.json')
@@ -135,7 +159,7 @@ async function createAssets () {
       if (maxSupplyBN.isNeg() || maxSupplyBN.gt(maxAsset)) {
         maxSupplyBN = maxAsset
       }
-      const assetOpts = { precision: asset.precision, symbol: asset.symbol, maxsupply: maxSupplyBN, description: pubdata.slice(0, 128) }
+      const assetOpts = { updatecapabilityflags: convertUpdateCapabilityFlags(asset.update_flags), precision: asset.precision, symbol: asset.symbol, maxsupply: maxSupplyBN, description: pubdata.slice(0, 128) }
       res = await newAsset(assetOpts, txOpts)
       if (!res) {
         console.log('Could not create assets, transaction not confirmed, exiting...')
@@ -155,7 +179,7 @@ async function createAssets () {
           return
         }
       }
-      await sleep(2000)
+      await sleep(1500)
     } else {
       alreadyExisting++
     }
@@ -179,7 +203,8 @@ async function createAssets () {
 }
 async function issueAssetAllocation (key, values, assetCount) {
   // sleep to allow for one transaction to process at one time in the Promise.All call
-  await sleep(assetCount * 2000)
+  await sleep(assetCount * 1500)
+  const assetGuid = key
   console.log('Sending ' + values.length + ' allocations for asset ' + assetGuid)
   const valueLenCopy = values.length
   let allocationOutputs = []
@@ -207,7 +232,7 @@ async function issueAssetAllocation (key, values, assetCount) {
           console.log('Could not issue asset, transaction not confirmed, exiting...')
           return
         }
-        await sleep(2000)
+        await sleep(1500)
         allocationOutputs = []
       }
     } else {
@@ -267,8 +292,14 @@ async function transferAssets () {
       count++
       res = await transferAsset(asset.asset_guid, asset.address)
       if (!res) {
-        console.log('Could not transfer asset, exiting...')
-        return
+        if (i <= 0) {
+          console.log('Could not transfer asset, exiting...')
+          return
+        }
+        console.log('Could not transfer asset, waiting 30 seconds to confirm as asset UTXO might be in mempool from previous transfer...')
+        i--
+        await sleep(30000)
+        continue
       }
       if ((count % NUMOUTPUTS_TX) === 0) {
         console.log('Confirming tx: ' + res.txid + '. Total assets so far: ' + count)
@@ -278,7 +309,7 @@ async function transferAssets () {
           return
         }
       }
-      await sleep(2000)
+      await sleep(1500)
     } else {
       alreadyTransferred++
     }
@@ -447,7 +478,7 @@ async function main () {
   }
   if (process.argv[2] === 'createassets') {
     const sendSysRes = await sendSys()
-    await sleep(2000)
+    await sleep(1500)
     if (sendSysRes) {
       await createAssets()
     }
