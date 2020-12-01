@@ -285,11 +285,11 @@ async function transferAssets () {
   let alreadyTransferred = 0
   for (let i = 0; i < assets.length; i++) {
     const asset = assets[i]
-    asset.asset_guid = Math.floor(asset.asset_guid / 7)
-    const assetTransferred = await confirmAsset(asset.asset_guid, asset.address)
+    const assetGuid = Math.floor(asset.asset_guid / 7)
+    const assetTransferred = await confirmAsset(assetGuid, asset.address)
     if (!assetTransferred) {
       count++
-      res = await transferAsset(asset.asset_guid, asset.address)
+      res = await transferAsset(assetGuid, asset.address)
       if (!res) {
         if (i <= 0) {
           console.log('Could not transfer asset, exiting...')
