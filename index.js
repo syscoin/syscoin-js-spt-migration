@@ -17,7 +17,7 @@ const COST_ASSET_SYS = 150
 const assetCostWithFee = new sjs.utils.BN(COST_ASSET_SYS + 1).mul(new sjs.utils.BN(sjstx.utils.COIN))
 const maxAsset = new sjs.utils.BN('999999999999999999')
 function convertUpdateCapabilityFlags (oldUpdateFlags) {
-  let newUpdateCapabilitylags = sjstx.utils.ASSET_INIT | sjstx.utils.ASSET_UPDATE_SUPPLY
+  let newUpdateCapabilitylags = sjstx.utils.ASSET_UPDATE_SUPPLY
   if (oldUpdateFlags & OLD_ASSET_UPDATE_DATA) {
     newUpdateCapabilitylags |= sjstx.utils.ASSET_UPDATE_DATA
   }
