@@ -202,7 +202,7 @@ async function createAssets () {
 async function issueAssetAllocation (key, values, assetCount) {
   // sleep to allow for one transaction to process at one time in the Promise.All call
   await sleep(assetCount * 1500)
-  const assetGuid = Math.floor(key / 8)
+  const assetGuid = key
   console.log('Sending ' + values.length + ' allocations for asset ' + assetGuid)
   const valueLenCopy = values.length
   let allocationOutputs = []
