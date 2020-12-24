@@ -137,7 +137,6 @@ async function createAssets () {
   let alreadyExisting = 0
   for (let i = 0; i < assets.length; i++) {
     const asset = assets[i]
-    asset.asset_guid = Math.floor(asset.asset_guid / 8)
     const assetExists = await confirmAsset(asset.asset_guid)
     if (!assetExists) {
       count++
@@ -285,7 +284,7 @@ async function transferAssets () {
   let alreadyTransferred = 0
   for (let i = 0; i < assets.length; i++) {
     const asset = assets[i]
-    const assetGuid = Math.floor(asset.asset_guid / 8)
+    const assetGuid = asset.asset_guid
     const assetTransferred = await confirmAsset(assetGuid, asset.address)
     if (!assetTransferred) {
       count++
