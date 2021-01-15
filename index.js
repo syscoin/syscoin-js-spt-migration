@@ -1,6 +1,6 @@
 const sjs = require('syscoinjs-lib')
 const sjstx = require('syscointx-js')
-const mnemonic = 'grocery field execute brain antenna put dice improve abstract abstract trouble upper six discover degree'
+const mnemonic = 'exercise suspect keep absorb math dream logic awkward maid mask rose sea icon next library'
 const OLD_ASSET_UPDATE_ADMIN = 1 // god mode
 const OLD_ASSET_UPDATE_DATA = 2 // can you update public data field?
 const OLD_ASSET_UPDATE_CONTRACT = 4 // can you update smart contract?
@@ -201,7 +201,7 @@ async function createAssets () {
 async function issueAssetAllocation (key, values, assetCount) {
   // sleep to allow for one transaction to process at one time in the Promise.All call
   await sleep(assetCount * 1500)
-  const assetGuid = key
+  const assetGuid = String(key)
   console.log('Sending ' + values.length + ' allocations for asset ' + assetGuid)
   const valueLenCopy = values.length
   let allocationOutputs = []
@@ -284,7 +284,7 @@ async function transferAssets () {
   let alreadyTransferred = 0
   for (let i = 0; i < assets.length; i++) {
     const asset = assets[i]
-    const assetGuid = asset.asset_guid
+    const assetGuid = String(asset.asset_guid)
     const assetTransferred = await confirmAsset(assetGuid, asset.address)
     if (!assetTransferred) {
       count++
