@@ -1,13 +1,13 @@
 const sjs = require('syscoinjs-lib')
 const sjstx = require('syscointx-js')
-const mnemonic = 'exercise suspect keep absorb math dream logic awkward maid mask rose sea icon next library'
+const mnemonic = 'club toss element melody skin ship rifle student reason real interest insane elevator beauty movie'
 const OLD_ASSET_UPDATE_ADMIN = 1 // god mode
 const OLD_ASSET_UPDATE_DATA = 2 // can you update public data field?
 const OLD_ASSET_UPDATE_CONTRACT = 4 // can you update smart contract?
 const OLD_ASSET_UPDATE_FLAGS = 16 // can you update flags? if you would set permanently disable this one and admin flag as well
 const OLD_ASSET_UPDATE_ALL = 31
 // blockbook URL
-const backendURL = 'http://localhost:19035' // if using localhost you don't need SSL see use 'systemctl edit --full blockbook-syscoin.service' to remove SSL from blockbook
+const backendURL = 'https://sys-explorer.tk/' // if using localhost you don't need SSL see use 'systemctl edit --full blockbook-syscoin.service' to remove SSL from blockbook
 // 'null' for no password encryption for local storage and 'true' for testnet
 const HDSigner = new sjs.utils.HDSigner(mnemonic, null, true)
 const syscoinjs = new sjs.SyscoinJSLib(HDSigner, backendURL)
@@ -15,6 +15,7 @@ const whitelist = []
 const NUMOUTPUTS_TX = 255
 const COST_ASSET_SYS = 150
 const assetCostWithFee = new sjs.utils.BN(COST_ASSET_SYS + 1).mul(new sjs.utils.BN(sjstx.utils.COIN))
+const baseAssetCostWithFee = new sjs.utils.BN(COST_ASSET_SYS).mul(new sjs.utils.BN(sjstx.utils.COIN))
 const maxAsset = new sjs.utils.BN('999999999999999999')
 function convertUpdateCapabilityFlags (oldUpdateFlags) {
   let newUpdateCapabilitylags = sjstx.utils.ASSET_UPDATE_SUPPLY
@@ -38,6 +39,7 @@ function readAssets () {
   let assetsToReturn = []
   if (whitelist.length > 0) {
     for (let i = 0; i < assets.length; i++) {
+      assets[i].asset_guid = assets[i].asset_guid.toString()
       const assetAllocation = whitelist.find(voutAsset => voutAsset.asset_guid === assets[i].asset_guid)
       if (assetAllocation !== undefined) {
         assetsToReturn.push(assets[i])
@@ -55,10 +57,11 @@ function readAssetAllocations () {
   // group allocations via guid as keys in a map
   for (let i = 0; i < assetallocations.length; i++) {
     const allocation = assetallocations[i]
+    allocation.asset_guid = allocation.asset_guid.toString()
     if (allocation.address === 'burn') {
       continue
     }
-    allocation.balance = String(allocation.balance).replace('.', '')
+    allocation.balance = new sjs.utils.BN(allocation.balance.replace('.', '')).toString()
     if (assetallocationsMap.has(allocation.asset_guid)) {
       const allocations = assetallocationsMap.get(allocation.asset_guid)
       allocations.push(allocation)
@@ -74,19 +77,45 @@ function readAssetAllocations () {
   }
   return assetallocationsMap
 }
-async function confirmAssetAllocation (address, assetGuid, balance) {
-  const utxoObj = await sjs.utils.fetchBackendUTXOS(syscoinjs.blockbookURL, address)
-  if (utxoObj.utxos) {
-    for (let i = 0; i < utxoObj.utxos.length; i++) {
-      const utxo = utxoObj.utxos[i]
-      if (utxo.assetInfo) {
-        if (utxo.assetInfo.assetGuid === assetGuid && new sjs.utils.BN(utxo.assetInfo.value).eq(balance)) {
-          return true
-        }
+
+async function confirmAssetAllocations (accountObj, values, assetGuid) {
+  const valuesMap = new Map()
+  for (let i = 0; i < values.length; i++) {
+    const value = values[i]
+    const key = value.address + "-" + value.balance
+    // add value if exists
+    if(valuesMap.has(key)) {
+      const valueObj = valuesMap.get(key)
+      const valueBN = new sjs.utils.BN(valueObj).add(new BN(value.balance))
+      value.balance = valueBN.toString()
+    }
+    valuesMap.set(key, value)
+  }
+  if (accountObj.transactions) {
+    for (const tx of accountObj.transactions) {
+      for (const vout of tx.vout) {
+        if(vout.assetInfo && vout.assetInfo.assetGuid === assetGuid) {
+          const voutValuesMap = new Map()
+          for (const address of vout.addresses) {
+            const key = address + "-" + vout.assetInfo.value
+            voutValuesMap.set(key, 1)
+          }
+          for (const key of voutValuesMap.keys()) {
+            if(valuesMap.has(key)) {
+              const valueObj = valuesMap.get(key)
+              const valueBN = new sjs.utils.BN(valueObj.balance).sub(new sjs.utils.BN(vout.assetInfo.value))
+              valueObj.balance = valueBN.toString()
+              if(valueBN.lte(new sjs.utils.BN(0))) {
+                valuesMap.delete(key)
+              }
+            }
+          }
+        }      
       }
     }
   }
-  return false
+  const newValues = Array.from(valuesMap.values())
+  return newValues
 }
 async function confirmAccount () {
   const utxoObj = await sjs.utils.fetchBackendAccount(syscoinjs.blockbookURL, HDSigner.getAccountXpub(), null, true)
@@ -122,6 +151,11 @@ async function confirmTx (txid) {
   for (let i = 0; i < 300; i++) {
     await sleep(1000)
     const tx = await sjs.utils.fetchBackendRawTx(backendURL, txid)
+    console.log('txid confirmations ' + tx.confirmations + ' for txid ' + txid)
+    if (!tx || tx.confirmations === undefined) {
+      console.log('Could not find a confirmed transaction for txid ' + txid)
+      return false
+    }
     if (tx.confirmations && tx.confirmations > 0) {
       return true
     }
@@ -137,6 +171,7 @@ async function createAssets () {
   let alreadyExisting = 0
   for (let i = 0; i < assets.length; i++) {
     const asset = assets[i]
+    asset.asset_guid = asset.asset_guid.toString()
     const assetExists = await confirmAsset(asset.asset_guid)
     if (!assetExists) {
       count++
@@ -198,42 +233,40 @@ async function createAssets () {
     console.log('Done, nothing to do...')
   }
 }
-async function issueAssetAllocation (key, values, assetCount) {
+async function issueAssetAllocation (accountObj, assetGuid, values, assetCount) {
   // sleep to allow for one transaction to process at one time in the Promise.All call
   await sleep(assetCount * 1500)
-  const assetGuid = String(key)
   console.log('Sending ' + values.length + ' allocations for asset ' + assetGuid)
   const valueLenCopy = values.length
   let allocationOutputs = []
   let totalOutputCount = 0
-  while (values.length > 0) {
-    const value = values.pop()
+  console.log('Confirming asset: ' + assetGuid + ' Outputs: ' + values.length)
+  const assetAllocationsMissing = await confirmAssetAllocations(accountObj, values, assetGuid)
+  console.log('Found ' + assetAllocationsMissing.length + ' missing allocations, confirming...')
+  totalOutputCount = values.length - assetAllocationsMissing.length
+  for (let i = 0; i < assetAllocationsMissing.length; i++) {
+    const value = assetAllocationsMissing[i]
     const balanceBN = new sjs.utils.BN(value.balance)
-    const assetAllocationExists = await confirmAssetAllocation(value.address, assetGuid, balanceBN)
-    if (!assetAllocationExists) {
-      allocationOutputs.push({ value: balanceBN, address: value.address })
-      // group outputs of an asset into up to NUMOUTPUTS_TX outputs per transaction
-      if (allocationOutputs.length >= NUMOUTPUTS_TX) {
-        totalOutputCount += allocationOutputs.length
-        const assetMap = new Map([
-          [assetGuid, { outputs: allocationOutputs }]
-        ])
-        const res = await issueAsset(assetMap)
-        if (!res) {
-          console.log('Could not issue asset tx for guid ' + assetGuid + ', retrying...')
-          continue
-        }
-        console.log('Confirming tx: ' + res.txid + '. Total asset allocations so far: ' + totalOutputCount + '. Remaining allocations: ' + values.length)
-        const confirmed = await confirmTx(res.txid)
-        if (!confirmed) {
-          console.log('Could not issue asset, transaction not confirmed, exiting...')
-          return
-        }
-        await sleep(1500)
-        allocationOutputs = []
+    allocationOutputs.push({ value: balanceBN, address: value.address })
+    // group outputs of an asset into up to NUMOUTPUTS_TX outputs per transaction
+    if (allocationOutputs.length >= NUMOUTPUTS_TX) {
+      totalOutputCount += allocationOutputs.length
+      const assetMap = new Map([
+        [assetGuid, { outputs: allocationOutputs }]
+      ])
+      const res = await issueAsset(assetMap)
+      if (!res) {
+        console.log('Could not issue asset tx for guid ' + assetGuid + ', retrying...')
+        continue
       }
-    } else {
-      totalOutputCount++
+      console.log('Confirming tx: ' + res.txid + '. Total asset allocations so far: ' + totalOutputCount + '. Remaining allocations: ' + values.length)
+      const confirmed = await confirmTx(res.txid)
+      if (!confirmed) {
+        console.log('Could not issue asset, transaction not confirmed, exiting...')
+        return
+      }
+      await sleep(1500)
+      allocationOutputs = []
     }
   }
   if (allocationOutputs.length > 0) {
@@ -241,6 +274,7 @@ async function issueAssetAllocation (key, values, assetCount) {
     const assetMap = new Map([
       [assetGuid, { outputs: allocationOutputs }]
     ])
+
     const res = await issueAsset(assetMap)
     if (!res) {
       console.log('Could not issue last asset tx, exiting...')
@@ -261,9 +295,10 @@ async function issueAssets () {
   let assetCount = 0
   let promises = []
   const asyncAssets = 10
+  const accountObj = await sjs.utils.fetchBackendAccount(syscoinjs.blockbookURL, HDSigner.getAccountXpub(), 'details=txs', true)
   for (const [key, values] of assetallocations.entries()) {
     assetCount++
-    promises.push(issueAssetAllocation(key, values, assetCount))
+    promises.push(issueAssetAllocation(accountObj, key, values, assetCount))
     if ((assetCount % asyncAssets) === 0) {
       await Promise.all(promises)
       promises = []
@@ -284,7 +319,8 @@ async function transferAssets () {
   let alreadyTransferred = 0
   for (let i = 0; i < assets.length; i++) {
     const asset = assets[i]
-    const assetGuid = String(asset.asset_guid)
+    asset.asset_guid = asset.asset_guid.toString()
+    const assetGuid = asset.asset_guid
     const assetTransferred = await confirmAsset(assetGuid, asset.address)
     if (!assetTransferred) {
       count++
@@ -383,7 +419,7 @@ async function sendSys () {
         continue
       }
       const utxoBNVal = new sjs.utils.BN(utxo.value)
-      if (utxoBNVal.gte(assetCostWithFee)) {
+      if (utxoBNVal.gte(baseAssetCostWithFee)) {
         count++
         if (count > NUMOUTPUTS_TX) {
           break
@@ -410,7 +446,7 @@ async function sendSys () {
     console.log('Could not create transaction, not enough funds?')
     return false
   }
-  const txid =  psbt.extractTransaction().getId()
+  const txid = psbt.extractTransaction().getId()
   console.log('Waiting for confirmation for: ' + txid)
   const confirmed = await confirmTx(txid)
   if (!confirmed) {
